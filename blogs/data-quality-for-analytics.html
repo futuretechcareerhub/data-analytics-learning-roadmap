@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>When Numbers Lie: A Practical Guide to Data Quality for Analysts</title>
+<meta name="description" content="Learn how data quality affects analytics decisions and how analysts can validate, clean and document data before trusting a report or dashboard.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/data-quality-for-analytics.html">
+<style>body{font-family:Arial,sans-serif;margin:0;background:#f5f7fa;color:#202124;line-height:1.7}header{background:#111827;color:#fff;padding:50px 20px;text-align:center}header h1{max-width:900px;margin:auto;font-size:40px;line-height:1.2}main{max-width:900px;margin:35px auto;padding:0 20px}article{background:#fff;padding:34px;border-radius:12px;box-shadow:0 2px 12px #00000012}h2{color:#111827;margin-top:34px}h3{color:#374151;margin-top:25px}a{color:#2563eb}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:12px;text-align:left}th{background:#f3f4f6}.note{background:#f3f4f6;padding:18px;border-radius:8px}.cta{background:#111827;color:#fff;padding:22px;border-radius:10px}.cta h2{color:#fff}.cta a{color:#fff}footer{text-align:center;padding:30px;color:#666}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"When Numbers Lie: A Practical Guide to Data Quality for Analysts","description":"A practical guide to data quality checks, validation, cleaning, documentation and trustworthy analytics.","mainEntityOfPage":{"@type":"WebPage","@id":"https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/data-quality-for-analytics.html"},"datePublished":"2026-10-01","dateModified":"2026-10-01","publisher":{"@type":"Organization","name":"Future Tech Career Hub"}}</script>
+</head>
+<body><header><h1>When Numbers Lie: A Practical Guide to Data Quality for Analysts</h1><p>How to catch bad data before it becomes a bad business decision.</p></header>
+<main><article>
+<p>Published: October 1, 2026</p>
+<p>A dashboard can look polished, the SQL can be correct, and the charts can update automatically — yet the final insight can still be wrong.</p>
+<p>The problem is often not the analysis itself. It is the quality of the data underneath it.</p>
+<p>For analysts, data quality is not just a technical cleanup task. It is part of analytical thinking. Before calculating a KPI, building a dashboard or presenting a recommendation, you need confidence that the numbers actually represent the business reality you are trying to measure.</p>
+
+<h2>What Does Data Quality Mean in Analytics?</h2>
+<p>Data quality describes how suitable a dataset is for the purpose for which it will be used. A dataset can be perfectly formatted and still be unsuitable if important records are missing, definitions are inconsistent or values are outdated.</p>
+<p>For practical analytics work, six dimensions are especially useful:</p>
+<table><tr><th>Dimension</th><th>Question to ask</th></tr>
+<tr><td>Accuracy</td><td>Do the values represent reality?</td></tr>
+<tr><td>Completeness</td><td>Are important records or fields missing?</td></tr>
+<tr><td>Consistency</td><td>Are the same concepts represented in the same way?</td></tr>
+<tr><td>Validity</td><td>Do values follow the expected format and rules?</td></tr>
+<tr><td>Timeliness</td><td>Is the data current enough for this decision?</td></tr>
+<tr><td>Uniqueness</td><td>Are duplicate records distorting the results?</td></tr></table>
+
+<h2>Why Good-Looking Data Can Still Be Wrong</h2>
+<p>One of the easiest mistakes is assuming that a clean-looking spreadsheet is trustworthy. Consider a sales report where the revenue column contains no blanks. That does not prove the revenue values are correct.</p>
+<p>Possible problems could include duplicate orders, cancelled transactions included as sales, refunds not deducted, different currencies mixed together, or revenue being calculated from inconsistent definitions.</p>
+<p>This is why a strong analyst asks what each field means and how the data was generated before using it.</p>
+
+<h2>Start With the Business Definition</h2>
+<p>Before checking rows and columns, define what you are actually trying to measure.</p>
+<p>Suppose a company asks for its “monthly active customers.” That phrase sounds straightforward, but several definitions are possible:</p>
+<ul><li>Customers who logged in during the month</li><li>Customers who made a purchase</li><li>Customers who placed a paid order</li><li>Customers who used a specific product feature</li></ul>
+<p>All four can produce different numbers. The first data-quality question is therefore not “Are there null values?” It is “What exactly does this metric mean?”</p>
+
+<h2>A Practical Data Quality Workflow</h2>
+<ol><li><strong>Understand the dataset:</strong> identify the grain, important fields, sources and update frequency.</li>
+<li><strong>Check structure:</strong> inspect data types, column names, date fields and expected formats.</li>
+<li><strong>Measure completeness:</strong> identify missing values in important fields.</li>
+<li><strong>Check uniqueness:</strong> look for duplicate IDs, orders, customers or events.</li>
+<li><strong>Validate ranges:</strong> investigate impossible or suspicious values.</li>
+<li><strong>Check consistency:</strong> compare categories, naming conventions and units.</li>
+<li><strong>Check relationships:</strong> verify joins and record counts between related tables.</li>
+<li><strong>Document assumptions:</strong> record decisions made during cleaning and metric calculation.</li></ol>
+
+<h2>Useful Checks in Excel</h2>
+<p>Excel remains useful for quick data-quality inspection, especially when analysts receive smaller operational datasets.</p>
+<ul><li>Filter and sort suspicious values</li><li>Use COUNTIF and COUNTIFS to identify duplicates or unexpected categories</li><li>Use conditional formatting for unusual values</li><li>Check blanks in critical columns</li><li>Compare totals against known business figures</li><li>Inspect date ranges and inconsistent formats</li></ul>
+<p>The goal is not to replace a full analytics workflow with Excel. It is to quickly identify obvious problems and understand the dataset.</p>
+
+<h2>SQL Checks Every Analyst Should Know</h2>
+<p>SQL is particularly useful when data-quality checks need to be repeatable.</p>
+<h3>Find duplicates</h3>
+<p>A simple GROUP BY with HAVING can reveal IDs that occur more than once.</p>
+<h3>Check missing values</h3>
+<p>Use NULL checks on fields that should normally be populated, such as order IDs, transaction dates or customer IDs.</p>
+<h3>Check suspicious ranges</h3>
+<p>Look for negative quantities, impossible dates, unusually large values or values outside known business limits.</p>
+<h3>Validate joins</h3>
+<p>When joining tables, compare row counts and key coverage before assuming the resulting dataset is correct. An unexpected many-to-many join can multiply records and inflate totals.</p>
+
+<h2>Power BI and Dashboard Data Quality</h2>
+<p>Data quality problems become especially dangerous when they reach dashboards because a dashboard can make questionable numbers look authoritative.</p>
+<p>Before publishing a Power BI report, check:</p>
+<ul><li>Source refresh status</li><li>Relationships between tables</li><li>Duplicate keys</li><li>Measure definitions</li><li>Filters and slicers</li><li>Date/calendar logic</li><li>Totals against a trusted source</li></ul>
+<p>A useful practice is to create a small validation page or hidden QA section containing record counts, totals and refresh information. This makes future checks easier.</p>
+
+<h2>Data Validation vs Data Cleaning</h2>
+<p>These two ideas are related but not identical.</p>
+<table><tr><th>Data cleaning</th><th>Data validation</th></tr>
+<tr><td>Fixes or transforms problematic data</td><td>Checks whether data meets expected rules</td></tr>
+<tr><td>May standardize categories</td><td>May flag unexpected categories</td></tr>
+<tr><td>Can remove duplicates</td><td>Can detect duplicates</td></tr>
+<tr><td>Can fill or handle missing values</td><td>Can measure completeness</td></tr></table>
+<p>A mature workflow does both. Cleaning without validation can hide problems; validation without an agreed process may simply produce a list of issues without resolving them.</p>
+
+<h2>Build a Simple Data Quality Scorecard</h2>
+<p>You do not always need a complex data-governance platform. For many analytics projects, a simple scorecard is enough to create discipline.</p>
+<table><tr><th>Check</th><th>Status</th><th>Evidence</th></tr>
+<tr><td>Required fields complete</td><td>Pass / Review</td><td>Missing-value percentage</td></tr>
+<tr><td>Unique IDs</td><td>Pass / Review</td><td>Duplicate count</td></tr>
+<tr><td>Date range valid</td><td>Pass / Review</td><td>Minimum and maximum dates</td></tr>
+<tr><td>Categories consistent</td><td>Pass / Review</td><td>Unexpected values</td></tr>
+<tr><td>Join keys valid</td><td>Pass / Review</td><td>Unmatched records</td></tr>
+<tr><td>Totals reconciled</td><td>Pass / Review</td><td>Comparison with source</td></tr></table>
+
+<h2>How Data Quality Changes the Final Insight</h2>
+<p>Imagine a company reports that average order value increased by 18%. Before celebrating the result, an analyst should ask:</p>
+<ul><li>Did the number of orders change?</li><li>Were refunds included?</li><li>Did the customer mix change?</li><li>Were duplicate transactions introduced?</li><li>Did the date filter change?</li><li>Was the same revenue definition used last month?</li></ul>
+<p>Good analytics is not just calculating the number. It is understanding whether the number deserves to be trusted.</p>
+
+<h2>What This Means for Someone Learning Data Analytics</h2>
+<p>Data quality is a valuable skill because it connects technical tools with business reasoning. A learner who knows Excel, SQL and Power BI but cannot question a suspicious number is still missing an important part of the analyst role.</p>
+<p>When evaluating <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" rel="noopener">data analytics training in India</a>, look for practical exercises where you have to clean messy datasets, validate calculations, explain assumptions and turn findings into business recommendations.</p>
+<p>It is also useful to practise with end-to-end projects rather than isolated tool exercises. Your portfolio should show not only the final dashboard but also how you checked the data and reached the conclusion.</p>
+
+<h2>Common Data Quality Mistakes</h2>
+<h3>Deleting every row with a missing value</h3><p>Missingness has meaning. Removing rows without understanding why data is missing can introduce bias.</p>
+<h3>Removing every outlier</h3><p>An unusual value may be an error, but it may also represent a real high-value customer or exceptional business event.</p>
+<h3>Trusting a dashboard because it looks professional</h3><p>Visual polish does not validate the underlying data.</p>
+<h3>Fixing data without documenting the change</h3><p>Future analysts need to know what was changed, why it was changed and which assumptions were made.</p>
+<h3>Checking quality only once</h3><p>Data quality can change after every source refresh. Important checks should become repeatable.</p>
+
+<h2>Frequently Asked Questions</h2>
+<h3>Why is data quality important in data analytics?</h3><p>Poor-quality data can produce misleading KPIs, incorrect trends and weak business recommendations even when the analysis itself is technically correct.</p>
+<h3>What should a data analyst check first?</h3><p>Start with the business definition, dataset grain, important fields, date range, duplicates, missing values and expected relationships between tables.</p>
+<h3>Can Excel be used for data-quality checks?</h3><p>Yes. Excel is useful for quick inspection, duplicate checks, missing-value checks and basic validation of smaller datasets.</p>
+<h3>Is SQL useful for data validation?</h3><p>Yes. SQL makes many checks repeatable and works well for duplicates, missing values, ranges, categories, joins and reconciliation.</p>
+<h3>Does data quality matter for Power BI?</h3><p>Yes. A dashboard can make incorrect numbers appear authoritative, so source data, relationships, measures and refreshes should be validated.</p>
+
+<div class="cta"><h2>Trust the Data Before Trusting the Dashboard</h2><p>The strongest analysts do not simply report numbers. They understand where those numbers came from, test whether they make sense and communicate the assumptions behind them.</p><p>If you want structured practice across Excel, SQL, Power BI and analytics projects, you can explore <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" rel="noopener">TechPratham's Data Analytics Certification Training</a>.</p></div>
+<div class="note"><strong>Key takeaway:</strong> Data quality is part of analytical thinking. Before building a KPI, dashboard or recommendation, validate the definition, source, completeness, consistency and relationships of the data.</div>
+<p><a href="../">← Back to Data Analytics Learning Roadmap</a></p>
+</article></main><footer>Future Tech Career Hub · Data Analytics Learning Roadmap</footer></body></html>
