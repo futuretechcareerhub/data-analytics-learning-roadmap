@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Before You Share a Dashboard: 7 Data Trust Tests Every Analyst Should Run</title>
+<meta name="description" content="A practical dashboard quality checklist for data analysts: validate totals, filters, date ranges, missing values, KPI definitions and business actions before sharing reports.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/data-analytics-dashboard-trust-test-before-sharing.html">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#202938;font-family:Arial,Helvetica,sans-serif;line-height:1.75}header{background:#111827;color:#fff;padding:22px 20px}header .nav{max-width:900px;margin:auto}header a{color:#fff;text-decoration:none}main{max-width:900px;margin:30px auto;padding:0 18px}.article{background:#fff;padding:clamp(22px,5vw,48px);border-radius:14px;box-shadow:0 4px 20px rgba(15,23,42,.05)}h1,h2,h3{line-height:1.3;color:#111827}h1{font-size:clamp(30px,4vw,42px);letter-spacing:-.5px}h2{margin-top:34px;font-size:25px}h3{margin-top:24px;font-size:19px}a{color:#1d4ed8}li{margin:8px 0}.note{background:#eff6ff;border-left:4px solid #2563eb;padding:15px 18px;border-radius:6px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:560px}th,td{border:1px solid #dbe2ea;padding:11px;text-align:left;vertical-align:top}th{background:#f8fafc}.cta{margin-top:36px;padding:22px;background:#f8fafc;border-radius:10px}@media(max-width:600px){.article{padding:22px 18px}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><a href="../">Data Analytics Learning Roadmap</a> · <a href="./">All Blogs</a></div></header>
+<main><article class="article">
+<h1>Before You Share a Dashboard: 7 Data Trust Tests Every Analyst Should Run</h1>
+<p><strong>Published: October 13, 2026</strong> · 8-minute read</p>
+<p>A dashboard can look polished and still lead a team to the wrong decision. A total may exclude cancelled orders, a date filter may hide the latest day, or a percentage may use the wrong denominator. These problems are easy to miss when a report is judged mainly by its colours and charts.</p>
+<p>Before sharing a dashboard, run the seven data-trust tests below. They work for Excel reports, SQL outputs and Power BI dashboards, and they help you explain not only what a number says but why someone should trust it.</p>
+<div class="note"><strong>Quick rule:</strong> never publish a KPI until you can explain its definition, source, time period, exclusions and how you checked the result.</div>
+
+<h2>1. Reconcile one headline number to its source</h2>
+<p>Choose the most important metric—revenue, orders, active users or leads—and calculate it independently. Compare the dashboard value with a simple SQL query, spreadsheet pivot or trusted source report. If the values differ, investigate before adjusting the visual.</p>
+<p>For example, if a dashboard reports 1,240 orders, verify whether that count includes test orders, duplicates, cancelled orders or only completed transactions. Write down the exact rule so another analyst can reproduce it.</p>
+
+<h2>2. Check the date window and data freshness</h2>
+<p>Look at the start date, end date, timezone and refresh timestamp. “Last 30 days” can mean a rolling 30-day window or the last 30 complete calendar days; those are not the same. If yesterday's data has not loaded, a trend line may falsely suggest a decline.</p>
+<ul><li>Confirm the earliest and latest dates in the underlying data.</li><li>Check whether the latest date is complete or still in progress.</li><li>Make the selected date range visible to the reader.</li></ul>
+
+<h2>3. Test filters, totals and drill-downs</h2>
+<p>Change one filter at a time and check whether the result changes as expected. Select a single region, product or channel, then clear the filter and compare the total. If categories are mutually exclusive, their values should reconcile to the grand total—unless the business definition explicitly says otherwise.</p>
+<p>Also test combinations of filters. A dashboard may work when Region is selected alone but fail when Region and Product are selected together. For design guidance, see <a href="data-analytics-dashboard-design.html">Data Analytics Dashboard Design: KPIs, Charts, Filters and Business Insights</a>.</p>
+
+<h2>4. Look for missing values, duplicates and suspicious records</h2>
+<p>Missing values can disappear from charts without being obvious. Check null dates, blank categories, duplicate IDs, impossible quantities and negative values that need explanation. Do not automatically delete unusual records: refunds, reversals and corrections may be valid business events.</p>
+<p>Build a small exception table that shows the issue, affected row count and resolution. The guide <a href="data-quality-for-analytics.html">When Numbers Lie: A Practical Guide to Data Quality for Analysts</a> covers more checks to add to your workflow.</p>
+
+<h2>5. Verify the KPI definition and denominator</h2>
+<p>Percentages are especially easy to misread. A conversion rate might be conversions divided by visitors, sessions or qualified leads. A churn rate might use customers at the beginning of the period or the average customer base. Both formulas can produce plausible-looking numbers while answering different questions.</p>
+<div class="table-wrap"><table><thead><tr><th>Metric</th><th>Question to document</th><th>Common trap</th></tr></thead><tbody><tr><td>Conversion rate</td><td>Which population is the denominator?</td><td>Mixing users with sessions</td></tr><tr><td>Average order value</td><td>Gross or net revenue, and which orders?</td><td>Including cancelled orders inconsistently</td></tr><tr><td>Month-over-month change</td><td>Are the periods equally complete?</td><td>Comparing a partial month with a full month</td></tr><tr><td>Customer churn</td><td>What counts as a churned customer?</td><td>Mixing cancellations and temporary inactivity</td></tr></tbody></table></div>
+<p>For a useful reporting habit, connect each KPI to a decision rather than presenting it as an isolated number. Read <a href="kpi-to-decision-data-analytics.html">From KPI to Decision: Turning Business Questions into Actionable Insights</a>.</p>
+
+<h2>6. Challenge the chart with a second view</h2>
+<p>When a result looks surprising, verify it another way. Compare a line chart with a table, a total with a category breakdown, or a SQL aggregate with a spreadsheet pivot. Check whether sorting, truncated axes or a small sample is exaggerating the apparent change.</p>
+<p>A second view is not proof by itself, but it is a quick way to spot aggregation and visualisation mistakes. If two methods disagree, trace the metric definition and transformation steps.</p>
+
+<h2>7. Make the decision and limitation explicit</h2>
+<p>A trustworthy dashboard should help a person decide what to do next. Add a short takeaway that states the observed change, the relevant segment, the likely business implication and what still needs validation. Separate correlation from causation; a chart alone rarely proves why a metric changed.</p>
+<p>For example: “Orders fell 8% week over week, mainly in the West region. The comparison uses complete weeks; check stock availability before attributing the decline to demand.” This is more useful than “Orders are down 8%” because it gives context and a next step without overclaiming.</p>
+
+<h2>A five-minute pre-share checklist</h2>
+<ul><li>☐ Headline total reconciles to an independent calculation.</li><li>☐ Date range, timezone and refresh status are clear.</li><li>☐ Filters and drill-downs return expected results.</li><li>☐ Missing values, duplicates and exceptions were reviewed.</li><li>☐ KPI formulas, units and denominators are documented.</li><li>☐ A second view supports any surprising result.</li><li>☐ The takeaway names a decision and acknowledges uncertainty.</li></ul>
+
+<h2>How to practise these tests while learning analytics</h2>
+<p>Use a small sales dataset and create one KPI summary, a date trend and a region filter. Before showing the report, deliberately introduce one duplicate, one missing category and one incomplete date. See whether your checks catch them, then record how you fixed each issue. This gives you a stronger portfolio story than a screenshot of a finished dashboard alone.</p>
+<p>You can build on these skills with a <a href="data-analytics-case-study.html">data analytics case study</a>, then document the validation steps in your <a href="data-analytics-portfolio.html">analytics portfolio</a>. When comparing learning options, use this <a href="data-analytics-training-india-practical-skills-checklist.html">practical checklist for evaluating Data Analytics training in India</a> and look for training that includes data validation, SQL, dashboard testing and feedback on real projects.</p>
+<div class="cta"><h2>Explore the Data Analytics Learning Roadmap</h2><p>Strengthen your workflow from data cleaning and SQL checks to dashboards and business communication.</p><p><a href="../">Return to the Data Analytics Learning Roadmap →</a></p><p>For course details, visit <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener noreferrer">Data Analytics Certification Training in India</a>.</p></div>
+</article></main>
+</body></html>
