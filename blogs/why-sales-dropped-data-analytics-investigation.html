@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Why Sales Dropped: A Step-by-Step Data Analytics Investigation</title>
+<meta name="description" content="Learn how to investigate a sales decline with a structured data analytics workflow: validate data, compare periods, segment performance, test hypotheses and recommend next steps.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/why-sales-dropped-data-analytics-investigation.html">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#202938;font-family:Arial,Helvetica,sans-serif;line-height:1.75}header{background:#111827;color:white;padding:22px 20px}header .nav{max-width:900px;margin:auto}header a{color:white;text-decoration:none}main{max-width:900px;margin:30px auto;padding:0 18px}.article{background:white;padding:clamp(22px,5vw,48px);border-radius:14px;box-shadow:0 4px 20px rgba(15,23,42,.05)}h1,h2,h3{line-height:1.3;color:#111827}h1{font-size:clamp(30px,4vw,42px)}h2{margin-top:32px;font-size:25px}a{color:#1d4ed8}li{margin:8px 0}.note{background:#eff6ff;border-left:4px solid #2563eb;padding:15px 18px;border-radius:6px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:540px}th,td{border:1px solid #dbe2ea;padding:11px;text-align:left;vertical-align:top}th{background:#f8fafc}.cta{margin-top:32px;padding:22px;background:#f8fafc;border-radius:10px}@media(max-width:600px){.article{padding:22px 18px}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><a href="../">Data Analytics Learning Roadmap</a> · <a href="./">All Blogs</a></div></header>
+<main><article class="article">
+<h1>Why Sales Dropped: A Step-by-Step Data Analytics Investigation</h1>
+<p><strong>Published: October 13, 2026</strong> · Practical case study</p>
+<p>When sales fall, the first chart rarely tells the whole story. The decline could come from fewer orders, a lower average order value, a change in product mix, stock availability, incomplete data or a shift in customer behaviour. A good analyst does not guess the cause from one line chart. They build and test explanations using evidence.</p>
+<p>This walkthrough demonstrates a repeatable investigation using a fictional retail business. The numbers are illustrative, not industry benchmarks or claims about a real company. The goal is to show how to structure the analysis and communicate what is known, what is uncertain and what should happen next.</p>
+<div class="note"><strong>Business question:</strong> Weekly sales appear lower than the previous week. Is the change real, where is it concentrated, and what evidence would help the team decide what to do?</div>
+
+<h2>Step 1: Define the metric and comparison period</h2>
+<p>Before analysing, agree on what “sales” means. Is it gross sales, net revenue after discounts and returns, or the value of completed orders? Choose comparable periods with the same number of complete days and document the timezone and currency.</p>
+<p>For this example, assume the business uses net sales from completed orders and compares two complete seven-day periods. If one period includes a public holiday or a promotion and the other does not, record that context rather than treating the periods as perfectly equivalent.</p>
+
+<h2>Step 2: Validate the data before trusting the decline</h2>
+<ul><li>Check that both periods have all seven expected dates.</li><li>Look for duplicate order IDs and unexpected null dates or sales amounts.</li><li>Confirm returns, cancellations, discounts and test transactions follow the agreed rules.</li><li>Check whether the latest data refresh completed successfully.</li></ul>
+<p>A missing day can look like a demand problem. A duplicated transaction can inflate the baseline. Use a repeatable data-quality checklist before interpreting the trend; the guide <a href="data-quality-for-analytics.html">When Numbers Lie: A Practical Guide to Data Quality for Analysts</a> provides more validation ideas.</p>
+
+<h2>Step 3: Break sales into measurable drivers</h2>
+<p>A useful starting point is to split sales into order volume and average order value (AOV):</p>
+<p><strong>Net sales = completed orders × average net sales per order</strong></p>
+<p>This decomposition helps identify whether the change is mainly associated with fewer orders, smaller baskets or both. It is a diagnostic starting point, not proof of the underlying cause.</p>
+<div class="table-wrap"><table><thead><tr><th>Illustrative metric</th><th>Previous week</th><th>Current week</th><th>What to inspect</th></tr></thead><tbody><tr><td>Completed orders</td><td>1,000</td><td>900</td><td>Traffic, conversion, stock availability</td></tr><tr><td>Average net sales per order</td><td>₹1,000</td><td>₹980</td><td>Discounts, product mix, basket size</td></tr><tr><td>Net sales</td><td>₹10,00,000</td><td>₹8,82,000</td><td>Validate definitions and period coverage</td></tr></tbody></table></div>
+<p>In this fictional example, both order count and average order value decreased. The next step is to locate where the differences are concentrated rather than immediately assigning blame to a campaign or team.</p>
+
+<h2>Step 4: Segment the change</h2>
+<p>Compare the same metrics by region, product category, sales channel and customer type. Start with dimensions that match how the business operates. Avoid slicing into dozens of groups without a hypothesis; tiny segments can create noisy or misleading patterns.</p>
+<ul><li><strong>Region:</strong> Is the decline broad or concentrated in one market?</li><li><strong>Product:</strong> Did a high-volume category lose sales or go out of stock?</li><li><strong>Channel:</strong> Did website, store or partner sales move differently?</li><li><strong>Customer:</strong> Did repeat purchases change, or did new-customer orders fall?</li></ul>
+<p>Check both absolute change and percentage change. A small category can show a large percentage swing while contributing little to the overall decline. For more on turning a metric into a business question, see <a href="kpi-to-decision-data-analytics.html">From KPI to Decision: How Data Analysts Turn Business Questions into Actionable Insights</a>.</p>
+
+<h2>Step 5: Use SQL to compare periods and find segments</h2>
+<p>Assume a cleaned table called <code>orders</code> with one row per order and columns <code>order_id</code>, <code>order_date</code>, <code>status</code>, <code>net_sales</code>, <code>region</code> and <code>category</code>. Adapt the date syntax to your database.</p>
+<pre><code>SELECT
+  CASE
+    WHEN order_date &gt;= DATE '2026-09-28'
+     AND order_date &lt;  DATE '2026-10-05' THEN 'previous_week'
+    WHEN order_date &gt;= DATE '2026-10-05'
+     AND order_date &lt;  DATE '2026-10-12' THEN 'current_week'
+  END AS period,
+  region,
+  category,
+  COUNT(DISTINCT order_id) AS orders,
+  SUM(net_sales) AS net_sales,
+  AVG(net_sales) AS avg_order_value
+FROM orders
+WHERE status = 'completed'
+  AND (
+    (order_date &gt;= DATE '2026-09-28' AND order_date &lt; DATE '2026-10-05')
+    OR
+    (order_date &gt;= DATE '2026-10-05' AND order_date &lt; DATE '2026-10-12')
+  )
+GROUP BY period, region, category
+ORDER BY period, region, category;</code></pre>
+<p>This query is an example template. Confirm the table grain and ensure <code>net_sales</code> is stored once per order before using <code>SUM</code>; if each order has multiple line items, aggregate at the correct grain to avoid double-counting. Also validate the period dates against the actual reporting calendar before running the query.</p>
+
+<h2>Step 6: Turn patterns into testable hypotheses</h2>
+<p>Suppose the West region and one product category account for much of the observed decline. That is a clue, not a final explanation. Create a hypothesis table and define what evidence would support or weaken each idea.</p>
+<div class="table-wrap"><table><thead><tr><th>Hypothesis</th><th>Evidence to check</th><th>Possible next action</th></tr></thead><tbody><tr><td>Products were unavailable</td><td>Inventory and out-of-stock logs by date and SKU</td><td>Review replenishment and lost-demand tracking</td></tr><tr><td>Website conversion fell</td><td>Sessions, checkout errors and conversion by device</td><td>Reproduce errors and review the checkout funnel</td></tr><tr><td>Promotion ended</td><td>Campaign calendar, discount depth and prior promotion periods</td><td>Compare with similar non-promotion weeks</td></tr><tr><td>Data pipeline missed records</td><td>Load logs, source row counts and latest timestamps</td><td>Repair the pipeline and rerun the report</td></tr></tbody></table></div>
+<p>Do not claim that a factor caused the decline until the supporting evidence is strong enough. Several factors may contribute, and a simple before-and-after comparison does not isolate causality.</p>
+
+<h2>Step 7: Present the finding as a decision brief</h2>
+<p>A useful analyst summary can follow four lines:</p>
+<ul><li><strong>What changed:</strong> State the metric and comparable periods.</li><li><strong>Where:</strong> Name the segment contributing most to the absolute change.</li><li><strong>What we know:</strong> Describe evidence that has been checked.</li><li><strong>What to do next:</strong> Recommend a focused test or operational check, and name any uncertainty.</li></ul>
+<p>For the fictional example, an appropriately cautious summary might be: “Net sales were lower in the current complete week, with fewer completed orders and a slightly lower average order value. The decline is concentrated in selected region-category combinations; inventory and channel-conversion checks are needed before attributing the change to a specific cause.”</p>
+<p>A clear dashboard can support the discussion, but it should not replace validation. See <a href="data-analytics-dashboard-design.html">Data Analytics Dashboard Design</a> and <a href="data-analytics-dashboard-trust-test-before-sharing.html">seven data-trust tests to run before sharing a dashboard</a>.</p>
+
+<h2>Practice exercise: make this a portfolio case study</h2>
+<ol><li>Create a small fictional orders dataset with dates, region, category, order status and net sales.</li><li>Document your metric definition and data-quality checks.</li><li>Use SQL or Excel to compare two complete periods.</li><li>Build a chart showing the trend and a breakdown by region or category.</li><li>Write a one-page decision brief that separates evidence from hypotheses.</li></ol>
+<p>Include your assumptions and limitations. A portfolio project is stronger when readers can reproduce the analysis and understand why you made each choice—not just see a polished chart. You can connect this work to your <a href="data-analytics-portfolio.html">Data Analytics Portfolio</a> and the <a href="data-analytics-projects.html">practical Data Analytics Projects guide</a>.</p>
+
+<h2>How this connects to Data Analytics training</h2>
+<p>When evaluating <a href="data-analytics-training-india-practical-skills-checklist.html">Data Analytics training in India</a>, look for hands-on practice with data cleaning, SQL aggregations, segmentation, visualisation and communicating findings to non-technical stakeholders. Ask how projects are assessed and whether you receive feedback on metric definitions, validation and recommendations. Course features vary, so compare the actual syllabus and project support rather than relying on broad promises.</p>
+<div class="cta"><h2>Continue your learning roadmap</h2><p>Build from data quality and SQL to dashboarding, case studies and business communication.</p><p><a href="../">Explore the Data Analytics Learning Roadmap →</a></p><p>For course details, visit <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener noreferrer">Data Analytics Certification Training in India</a>.</p></div>
+</article></main>
+</body></html>
