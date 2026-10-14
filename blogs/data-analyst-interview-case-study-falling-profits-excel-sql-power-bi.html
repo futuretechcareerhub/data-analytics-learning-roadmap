@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Data Analyst Interview Case Study: How to Analyze Falling Profits Using Excel, SQL & Power BI</title>
+<meta name="description" content="Practise a data analyst interview case study on falling profits using Excel, SQL and Power BI to validate data, investigate profit drivers and present business recommendations.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/data-analyst-interview-case-study-falling-profits-excel-sql-power-bi.html">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#202938;font-family:Arial,Helvetica,sans-serif;line-height:1.75}header{background:#111827;color:#fff;padding:22px 20px}header .nav{max-width:900px;margin:auto}header a{color:#fff;text-decoration:none}main{max-width:900px;margin:30px auto;padding:0 18px}.article{background:#fff;padding:clamp(22px,5vw,48px);border-radius:14px;box-shadow:0 4px 20px rgba(15,23,42,.05)}h1,h2,h3{line-height:1.3;color:#111827}h1{font-size:clamp(30px,4vw,42px)}h2{margin-top:34px;font-size:25px}h3{font-size:19px}a{color:#1d4ed8}li{margin:8px 0}.note{background:#eff6ff;border-left:4px solid #2563eb;padding:15px 18px;border-radius:6px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:560px}th,td{border:1px solid #dbe2ea;padding:11px;text-align:left;vertical-align:top}th{background:#f8fafc}pre{background:#111827;color:#f9fafb;padding:18px;border-radius:8px;overflow-x:auto}.cta{margin-top:36px;padding:22px;background:#f8fafc;border-radius:10px}@media(max-width:600px){.article{padding:22px 18px}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><a href="../">Data Analytics Learning Roadmap</a> · <a href="./">All Blogs</a></div></header>
+<main><article class="article">
+<h1>Data Analyst Interview Case Study: How to Analyze Falling Profits Using Excel, SQL & Power BI</h1>
+<p><strong>Published: October 14, 2026</strong> · Practical interview case study</p>
+<p>Imagine a retail company reports that revenue is almost unchanged this month, but profit has fallen sharply. The hiring manager asks: “How would you investigate this?” A strong data analyst does not jump straight to a conclusion. They clarify the metric, validate the data, break profit into drivers, test segments and explain what the evidence does—and does not—show.</p>
+<p>This fictional case study gives you a repeatable framework for an interview or portfolio project using Excel, SQL and Power BI. All figures below are illustrative, not results from a real company.</p>
+<div class="note"><strong>Business question:</strong> Why did monthly profit decline, which products or channels contributed most, and what should the business investigate next?</div>
+
+<h2>1. Clarify the business metric first</h2>
+<p>Start by asking how the company defines profit. It could mean gross profit, contribution margin or operating profit. For this exercise, use gross profit:</p>
+<p><strong>Gross profit = net sales − cost of goods sold (COGS)</strong></p>
+<p><strong>Gross margin % = gross profit ÷ net sales × 100</strong></p>
+<p>Confirm whether net sales exclude discounts, cancellations and returns, and whether COGS includes the costs relevant to the chosen definition. Agree on the reporting timezone, currency and two complete comparison periods. If these definitions change between months, the comparison may be misleading.</p>
+
+<h2>2. Validate the dataset before analysing it</h2>
+<p>Assume the dataset contains order date, order ID, product, category, region, channel, quantity, unit selling price, discount and unit cost. Before calculating anything:</p>
+<ul><li>Check missing dates, product names, quantities, selling prices and unit costs.</li><li>Investigate duplicate order-line IDs rather than deleting them blindly.</li><li>Confirm how returns, cancelled orders and refunded discounts are represented.</li><li>Check for negative quantities, unusually high discounts and unexpected cost values.</li><li>Make sure both months are complete and the data refresh succeeded.</li></ul>
+<p>In Excel, use filters, conditional formatting, pivot tables and duplicate checks to identify suspicious rows. Record how each exception was handled so the analysis can be reproduced. For more validation ideas, read <a href="data-quality-for-analytics.html">When Numbers Lie: A Practical Guide to Data Quality for Analysts</a>.</p>
+
+<h2>3. Calculate the key profit metrics</h2>
+<p>Consider this simplified example:</p>
+<div class="table-wrap"><table><thead><tr><th>Metric</th><th>Previous month</th><th>Current month</th><th>Change</th></tr></thead><tbody><tr><td>Net sales</td><td>₹10,00,000</td><td>₹10,10,000</td><td>+1.0%</td></tr><tr><td>COGS</td><td>₹6,00,000</td><td>₹6,60,000</td><td>+10.0%</td></tr><tr><td>Gross profit</td><td>₹4,00,000</td><td>₹3,50,000</td><td>−12.5%</td></tr><tr><td>Gross margin</td><td>40.0%</td><td>34.7%</td><td>−5.3 percentage points</td></tr></tbody></table></div>
+<p>Here, sales rose slightly while gross profit fell. That points the investigation toward costs, discounts or product mix—but it does not yet prove which factor caused the change. Always calculate percentage-point changes separately from percentage changes.</p>
+
+<h2>4. Use SQL to compare months and product segments</h2>
+<p>Suppose a cleaned table named <code>sales_lines</code> has one row per order line and columns for <code>order_date</code>, <code>order_line_id</code>, <code>status</code>, <code>net_sales</code>, <code>cogs</code>, <code>category</code> and <code>channel</code>. Adapt date syntax to your database and verify that amounts are stored at the stated row grain.</p>
+<pre><code>SELECT
+  CASE
+    WHEN order_date >= DATE '2026-08-01'
+     AND order_date <  DATE '2026-09-01' THEN 'previous_month'
+    WHEN order_date >= DATE '2026-09-01'
+     AND order_date <  DATE '2026-10-01' THEN 'current_month'
+  END AS period,
+  category,
+  channel,
+  SUM(net_sales) AS net_sales,
+  SUM(cogs) AS cogs,
+  SUM(net_sales - cogs) AS gross_profit,
+  100.0 * SUM(net_sales - cogs)
+    / NULLIF(SUM(net_sales), 0) AS gross_margin_pct
+FROM sales_lines
+WHERE status = 'completed'
+  AND order_date >= DATE '2026-08-01'
+  AND order_date <  DATE '2026-10-01'
+GROUP BY period, category, channel
+ORDER BY period, category, channel;</code></pre>
+<p>This is a template, not a universal query. If discounts or returns are stored separately, incorporate them according to the documented metric definition. Avoid summing an order-level amount repeated across multiple line items, as this can inflate totals.</p>
+
+<h2>5. Investigate the likely profit drivers</h2>
+<p>Use a consistent breakdown by category, product, region and sales channel. Start with absolute profit change so you can see which segments explain the largest part of the decline; then review margin percentage to understand efficiency.</p>
+<ul><li><strong>Higher unit costs:</strong> compare supplier prices, freight or cost updates by product and date.</li><li><strong>Deeper discounts:</strong> compare discount rates and promotion calendars by channel.</li><li><strong>Product mix shift:</strong> check whether more low-margin products made up the sales mix.</li><li><strong>Returns and refunds:</strong> verify whether return rates or refund amounts changed.</li><li><strong>Data or accounting changes:</strong> inspect pipeline logs, mapping changes and cost-allocation rules.</li></ul>
+<p>Do not assume that the segment with the lowest margin caused the decline. Quantify each segment's contribution to the total change and check whether the pattern persists across comparable periods.</p>
+
+<h2>6. Build a focused Power BI dashboard</h2>
+<p>A useful interview dashboard should answer the business question without overwhelming the reader. Consider these visuals:</p>
+<ul><li>KPI cards for net sales, gross profit, gross margin and month-over-month change.</li><li>A monthly trend line for sales, COGS and gross profit.</li><li>A ranked bar chart of profit change by product category.</li><li>A matrix with category, channel, sales, profit and margin.</li><li>Slicers for date, region, category and channel.</li></ul>
+<p>Keep units and comparison periods visible. Test slicers, reconcile totals against SQL, and avoid presenting incomplete dates as complete periods. See <a href="data-analytics-dashboard-design.html">Data Analytics Dashboard Design</a> and <a href="data-analytics-dashboard-trust-test-before-sharing.html">seven dashboard data-trust tests</a> for additional checks.</p>
+
+<h2>7. Turn findings into a cautious recommendation</h2>
+<p>A good case-study answer separates observations from hypotheses. Use this structure:</p>
+<ol><li><strong>Finding:</strong> state how profit and margin changed over comparable periods.</li><li><strong>Driver:</strong> identify the categories or channels contributing most to the absolute profit decline.</li><li><strong>Evidence:</strong> name the checks that support the explanation, such as cost records or promotion history.</li><li><strong>Next action:</strong> recommend a focused investigation or test with a measurable outcome.</li><li><strong>Limitation:</strong> disclose missing data or factors that have not yet been ruled out.</li></ol>
+<p>For the illustrative figures, a careful summary might be: “Net sales increased 1%, while gross profit fell 12.5% and gross margin declined from 40.0% to 34.7%. The next step is to quantify the category-level profit change and validate unit costs, discounts and product mix before assigning a cause.”</p>
+
+<h2>Practise this as a portfolio project</h2>
+<ul><li>Create a small synthetic sales dataset with at least two complete months.</li><li>Document the profit definition and data-quality rules.</li><li>Use Excel to inspect data and calculate baseline metrics.</li><li>Use SQL to aggregate profit and margin by month, category and channel.</li><li>Build a Power BI dashboard and validate its totals against SQL.</li><li>Write a one-page decision brief with evidence, recommendations and limitations.</li></ul>
+<p>Include your SQL, metric definitions, dashboard screenshots and a short explanation of what you would investigate next. A portfolio project is stronger when a reviewer can follow your reasoning, not just see a finished visual. You can connect this case to your <a href="data-analytics-portfolio.html">Data Analytics Portfolio</a> and <a href="data-analytics-projects.html">practical Data Analytics Projects</a>.</p>
+
+<h2>How to build these skills through structured learning</h2>
+<p>When comparing <a href="data-analytics-training-india-practical-skills-checklist.html">Data Analytics training in India</a>, look for hands-on work in Excel, SQL, Power BI, data cleaning, business metrics and communicating findings. Review the actual syllabus, project feedback and assessment process rather than relying on broad claims about job outcomes.</p>
+<div class="cta"><h2>Continue your Data Analytics learning roadmap</h2><p>Practise the complete workflow—from reliable data and SQL analysis to dashboards and decision-ready communication.</p><p><a href="../">Explore the Data Analytics Learning Roadmap →</a></p><p>For course details, visit <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener noreferrer">Data Analytics Certification Training in India</a>.</p></div>
+</article></main>
+</body></html>
