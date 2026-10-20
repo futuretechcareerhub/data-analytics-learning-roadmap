@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why High Sales Don't Always Mean High Profit: A Data Analytics Case Study</title>
+<meta name="description" content="Explore why sales can rise while profit falls, using Excel to validate data, SQL to identify low-profit products, and Power BI to explain business insights and next steps.">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/high-sales-low-profit-data-analytics-case-study.html">
+<meta name="robots" content="index,follow">
+</head>
+<body>
+<header><nav aria-label="Main navigation"><a href="../">Home</a> | <a href="./">All Data Analytics Blogs</a></nav></header>
+<main><article>
+<p>Published: October 20, 2026</p>
+<h1>Why High Sales Don't Always Mean High Profit: A Data Analytics Case Study</h1>
+<p>Higher sales sound like good news, but revenue alone does not tell the full story. A business can sell more and still earn less if discounts increase, costs rise, returns grow or sales shift toward products with thinner margins.</p>
+<p>This fictional case study shows how an analyst can investigate that situation with Excel, SQL and Power BI, then explain the evidence in a way that supports a business decision. The same end-to-end thinking is useful when evaluating practical <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">analytics training in India</a>.</p>
+<h2>The business question</h2>
+<p>Imagine an online retailer compares two months. Revenue increased by 15%, but total profit decreased by 8%. The sales team wants to celebrate growth, while finance is concerned about profitability.</p>
+<p>The analyst's first task is to clarify the question: which products, regions, discounts or operating costs explain the gap between revenue and profit? Before analysing, agree on the date range and definitions for revenue, profit, returns and margin.</p>
+<h2>Step 1: Validate the numbers in Excel</h2>
+<p>Start with a copy of the transaction data and check whether it is reliable enough to analyse. Useful checks include:</p>
+<ul>
+<li>Find duplicate order lines and investigate whether they are genuine duplicates.</li>
+<li>Check missing product categories, dates, prices and cost fields.</li>
+<li>Confirm that discounts, refunds and returns are represented consistently.</li>
+<li>Compare total revenue and profit with the source report.</li>
+<li>Use pivot tables to compare revenue, profit and profit margin by product and region.</li>
+</ul>
+<p>For each cleaning step, record what changed and why. Do not silently remove unusual transactions; they may represent a data issue or an important business event.</p>
+<h2>Step 2: Define the right metrics</h2>
+<p>Revenue measures sales value, while profit measures what remains after the costs included in the business definition. Profit margin shows profit relative to revenue. For a simplified analysis:</p>
+<ul>
+<li><strong>Revenue:</strong> total value of sales for the selected period.</li>
+<li><strong>Profit:</strong> revenue minus the relevant costs.</li>
+<li><strong>Profit margin:</strong> total profit divided by total revenue.</li>
+<li><strong>Average order value:</strong> revenue divided by the number of orders.</li>
+</ul>
+<p>Use the organisation's agreed definitions. If shipping, returns or marketing costs are not included in the profit field, state that limitation clearly.</p>
+<h2>Step 3: Use SQL to identify low-profit products</h2>
+<p>SQL can summarise transaction-level data and make the investigation repeatable. This example groups results by product category:</p>
+<pre><code>SELECT
+  category,
+  SUM(revenue) AS total_revenue,
+  SUM(profit) AS total_profit,
+  SUM(profit) / NULLIF(SUM(revenue), 0) AS profit_margin
+FROM sales
+WHERE order_date >= '2026-09-01'
+  AND order_date < '2026-10-01'
+GROUP BY category
+ORDER BY total_profit ASC;</code></pre>
+<p>The table and column names are illustrative. Adapt the date range, cost rules and data model to your actual dataset. Check whether returns and cancelled orders are included before interpreting the output.</p>
+<p>Next, compare categories with the previous month. Look for revenue growth paired with falling margin, high discount levels, increased returns or a change in product mix. The query helps locate patterns; it does not automatically prove what caused them.</p>
+<h2>Step 4: Test possible explanations</h2>
+<p>Use evidence to check several hypotheses rather than choosing the first plausible story:</p>
+<ul>
+<li><strong>Discounts:</strong> did the average discount increase, and did margin fall most in heavily discounted orders?</li>
+<li><strong>Product mix:</strong> did a larger share of sales come from lower-margin categories?</li>
+<li><strong>Returns:</strong> did return or refund rates rise for a particular product?</li>
+<li><strong>Operating costs:</strong> did shipping or fulfilment cost per order increase?</li>
+<li><strong>Data quality:</strong> are the two periods comparable, or are missing records distorting the result?</li>
+</ul>
+<p>Segment by category, region and sales channel where appropriate. Compare equivalent periods and account for seasonal changes. If the available data cannot confirm a cause, report it as a hypothesis and recommend what additional data is needed.</p>
+<h2>Step 5: Present the findings in Power BI</h2>
+<p>A Power BI dashboard should help a stakeholder explore the business question. Consider including:</p>
+<ul>
+<li>KPI cards for revenue, profit and profit margin.</li>
+<li>A monthly trend comparing revenue and profit.</li>
+<li>A category chart that highlights high-revenue, low-margin products.</li>
+<li>A discount or return-rate comparison by category.</li>
+<li>Filters for date, region, category and channel.</li>
+</ul>
+<p>Keep the report focused. Add clear units, date labels and KPI definitions, and test each filter. Validate totals against your Excel and SQL results before sharing the dashboard.</p>
+<h2>Step 6: Turn the analysis into a business recommendation</h2>
+<p>Suppose the evidence suggests that one category's margin fell during a period of heavier discounting. A measured next step might be to test a revised discount threshold for that category, monitor profit per order and conversion rate, and compare the results with a suitable baseline.</p>
+<p>A useful recommendation identifies the action, the reason, the owner and the success metric. Avoid promising a result before the test has been run. Analytics should make the decision better informed and its impact measurable.</p>
+<h2>How to present this case study in your portfolio</h2>
+<p>A strong portfolio project explains the thinking behind the charts. Include:</p>
+<ol>
+<li><strong>Problem statement:</strong> why rising revenue and falling profit matter.</li>
+<li><strong>Data preparation:</strong> the quality checks and assumptions you documented.</li>
+<li><strong>Analysis:</strong> the Excel summaries, SQL queries and hypotheses tested.</li>
+<li><strong>Dashboard:</strong> the key views and how they answer the question.</li>
+<li><strong>Conclusion:</strong> the supported findings, limitations and next action.</li>
+</ol>
+<p>Use a public or synthetic dataset and avoid publishing confidential business information. Be prepared to explain your calculations, why you chose each metric and what you would investigate next.</p>
+<h2>What to look for in analytics training in India</h2>
+<p>When comparing learning options, look for practical work that connects tools to business reasoning. Check whether the programme helps you:</p>
+<ul>
+<li>Clean data and verify totals in Excel.</li>
+<li>Write SQL queries using filters, grouping, joins and calculations.</li>
+<li>Build Power BI reports with meaningful KPIs and interactive filters.</li>
+<li>Interpret findings without overstating what the data proves.</li>
+<li>Complete and explain an end-to-end portfolio project.</li>
+<li>Receive feedback on analytical accuracy and communication.</li>
+</ul>
+<p>Learning software features is only one part of the work. A good analyst also defines the problem, checks assumptions, communicates uncertainty and recommends a measurable next step.</p>
+<h2>Continue building practical skills</h2>
+<p>Try this workflow with a small dataset: validate the numbers, define profit-related metrics, test two or three possible explanations and create a dashboard that supports a clear decision. This helps you practise Excel, SQL and Power BI as connected parts of an analysis.</p>
+<p>If you are comparing structured learning options, review <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">TechPratham's Data Analytics Certification Training in India</a> and assess how its learning approach matches your goals, practice needs and portfolio plans.</p>
+<p>Explore more practical guides on the <a href="../">Data Analytics Learning Roadmap homepage</a> or browse <a href="./">all data analytics blogs</a>.</p>
+</article></main>
+<footer><p>Data Analytics Learning Roadmap</p></footer>
+</body>
+</html>
