@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>When the Dashboard Says “In Stock” but Products Keep Selling Out: A Data Analytics Investigation | Data Analytics Learning Roadmap</title>
+<meta name="description" content="Learn how analysts investigate inventory mismatches and stockouts using Excel data checks, SQL queries, Power BI dashboards and practical business recommendations.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/dashboard-says-in-stock-products-selling-out-data-analytics.html">
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f5f7fa;color:#202124;line-height:1.75}header{background:#111827;color:#fff;padding:38px 20px}header .wrap,main{max-width:900px;margin:auto}header a{color:#bfdbfe}main{padding:28px 20px}article{background:#fff;padding:32px;border-radius:12px}h1{font-size:36px;line-height:1.25}h2{margin-top:32px;color:#111827}a{color:#1d4ed8}pre{overflow:auto;white-space:pre-wrap;background:#f3f4f6;padding:16px;border-radius:8px}table{width:100%;border-collapse:collapse;margin:18px 0}th,td{border:1px solid #d1d5db;padding:10px;text-align:left}th{background:#f3f4f6}.callout{background:#eff6ff;border-left:4px solid #2563eb;padding:16px;margin:22px 0}.cta{background:#111827;color:#fff;padding:22px;border-radius:10px;margin-top:30px}.cta a{color:#bfdbfe}footer{text-align:center;padding:25px;color:#6b7280}@media(max-width:650px){h1{font-size:29px}article{padding:22px}table{font-size:14px}}
+</style></head><body>
+<header><div class="wrap"><p><a href="../">Data Analytics Learning Roadmap</a> / <a href="./">All Blogs</a></p><p>Practical Analytics Case Study · October 23, 2026</p></div></header>
+<main><article>
+<h1>When the Dashboard Says “In Stock” but Products Keep Selling Out: A Data Analytics Investigation</h1>
+<p>A store dashboard shows 240 units available. The product page says “in stock,” but customers report that the item is unavailable and staff keep finding empty shelves. The problem may not be one incorrect number. Inventory can become inconsistent when sales, returns, transfers, reservations, and warehouse updates are recorded at different times or under different rules.</p>
+<p>For learners exploring <strong>Analytics Training in India</strong>, this is a practical business investigation: trace the mismatch, validate the underlying records, find where stockouts happen, and explain what the team should check next. The goal is not to assume the dashboard is wrong; it is to use evidence to discover which part of the inventory process needs attention.</p>
+<h2>Why “in stock” and “out of stock” can both appear true</h2>
+<p>Inventory can mean physical stock, sellable stock, stock reserved for orders, stock in transit, or stock across several locations. A product may exist in the network while being unavailable at a specific store or delivery address.</p>
+<ul><li><strong>Update delays:</strong> a sale may not reach the inventory dashboard immediately.</li><li><strong>Reserved units:</strong> items allocated to open orders may still be included in the headline quantity.</li><li><strong>Location mismatch:</strong> total warehouse stock may be positive while a particular store has none.</li><li><strong>Returns and damaged goods:</strong> returned units may be counted before inspection or restocking.</li><li><strong>Duplicate or missing events:</strong> a stock movement may be duplicated or never arrive.</li><li><strong>Product mapping:</strong> variants, barcodes, or SKUs may not match across platforms.</li><li><strong>Demand spikes:</strong> fast-selling products may run out between replenishment updates.</li></ul>
+<div class="callout"><strong>Key idea:</strong> define “available” before analysing it. A reliable metric specifies SKU, location, timestamp, stock status, and whether reserved or damaged units are excluded.</div>
+<h2>Step 1: Define the business question</h2>
+<p>Start with a measurable question: <em>Which products and locations experience repeated stockouts despite positive reported inventory, and what data or process patterns coincide with those events?</em></p>
+<p>Agree on operational definitions with the team:</p>
+<ul><li><strong>On-hand stock:</strong> units physically recorded at a location.</li><li><strong>Reserved stock:</strong> units allocated to orders but not yet shipped.</li><li><strong>Sellable stock:</strong> units eligible for sale after reservations, damage, and quality holds.</li><li><strong>Stockout event:</strong> a defined period when sellable stock is unavailable for demand.</li><li><strong>Inventory mismatch:</strong> a difference between expected inventory and another system’s reported state at a comparable time.</li></ul>
+<p>Definitions vary by business. Document the agreed rules instead of treating every system’s quantity field as interchangeable.</p>
+<h2>Step 2: Audit the data with Excel</h2>
+<p>Export a sample of inventory snapshots, order lines, stock movements, and product-location mappings. Preserve the original extracts, record when each export was generated, and work on a separate copy.</p>
+<ol><li>Check for blank SKU, location, transaction ID, and timestamp fields.</li><li>Find duplicate transaction IDs and confirm whether they are genuine repeated events.</li><li>Standardize SKU formats, location names, and status labels.</li><li>Sort stock movements by timestamp and look for unusual jumps or missing periods.</li><li>Compare the inventory snapshot with relevant movements, allowing for known update delays.</li><li>Reconcile sample totals with the operational source report.</li></ol>
+<p>Excel filters, conditional formatting, PivotTables, COUNTIF, and XLOOKUP can flag suspicious rows. A flagged row is only a lead: confirm whether it is a real error, a valid adjustment, or a timing difference.</p>
+<h2>Step 3: Use SQL to find stockout patterns</h2>
+<p>SQL can aggregate inventory snapshots by SKU and location and identify repeated periods with zero or negative sellable quantity. The query below is an illustrative screening step; adjust table names, date syntax, and business rules to your database.</p>
+<pre>SELECT
+  sku,
+  location_id,
+  COUNT(*) AS snapshot_count,
+  SUM(CASE WHEN sellable_qty <= 0 THEN 1 ELSE 0 END)
+    AS unavailable_snapshots,
+  MIN(snapshot_time) AS first_observed_snapshot,
+  MAX(snapshot_time) AS last_observed_snapshot
+FROM inventory_snapshots
+WHERE snapshot_time >= DATE '2026-09-01'
+  AND snapshot_time <  DATE '2026-10-01'
+GROUP BY sku, location_id
+ORDER BY unavailable_snapshots DESC;</pre>
+<p>This counts snapshots where sellable stock is unavailable. It does not prove lost sales: snapshot frequency and business definitions affect the result. To investigate mismatches, join snapshots to order and stock-movement records using SKU, location, and an appropriate time window. Check whether an order arrived after the last inventory update, reserved units were included, or receipts and transfers posted late.</p>
+<p>Do not join only on SKU if stock is location-specific. Use consistent time zones, and remember that a daily snapshot can miss short stockouts between snapshots. Negative quantities may reflect timing or accounting rules, so investigate before labelling them errors.</p>
+<h2>Step 4: Separate the possible causes</h2>
+<table><thead><tr><th>Observed pattern</th><th>Possible explanation</th><th>Next check</th></tr></thead><tbody>
+<tr><td>Positive warehouse total, zero store stock</td><td>Location allocation or transfer delay</td><td>Compare location balances and transfer timestamps</td></tr>
+<tr><td>Dashboard quantity updates after sales</td><td>Delayed or failed inventory feed</td><td>Compare order event and refresh times</td></tr>
+<tr><td>High stock shown but orders are rejected</td><td>Reserved or non-sellable units included</td><td>Recalculate available-to-sell stock</td></tr>
+<tr><td>One SKU has implausible quantity jumps</td><td>Duplicate movements or mapping issue</td><td>Review transaction IDs and product master data</td></tr>
+<tr><td>Stockouts cluster during demand peaks</td><td>Replenishment or forecast mismatch</td><td>Compare demand, lead time, and reorder timing</td></tr>
+</tbody></table>
+<p>These are hypotheses, not conclusions. Record the evidence supporting each explanation, what would disprove it, and what data is still missing.</p>
+<h2>Step 5: Build a decision-focused Power BI dashboard</h2>
+<p>A useful dashboard helps operations teams decide what to inspect rather than merely displaying charts. Consider a focused set of visuals:</p>
+<ul><li><strong>Availability KPIs:</strong> sellable units, stockout SKU-location pairs, and stockout frequency over a defined period.</li><li><strong>Mismatch trend:</strong> validated mismatches by day or week, with data freshness visible.</li><li><strong>SKU-location table:</strong> repeated unavailability, current sellable quantity, and last update time.</li><li><strong>Stock movement trend:</strong> receipts, sales, returns, and adjustments over time.</li><li><strong>Location comparison:</strong> compare stores or warehouses without blending their stock balances.</li><li><strong>Drill-through details:</strong> inspect the movement history behind an alert.</li></ul>
+<p>Define every KPI, show the latest successful refresh timestamp, and do not call an hourly dashboard “real time.” If users can filter by location or category, check that the filters affect the intended visuals and that totals reconcile.</p>
+<h2>Step 6: Turn findings into a practical action plan</h2>
+<p>Prioritize issues by customer impact, recurrence, and business importance. A mismatch affecting a high-demand product across several locations may deserve attention before a one-off discrepancy in a low-volume item.</p>
+<p>Depending on the evidence, the business might fix duplicate or missing events, separate on-hand and sellable quantities, monitor stale data feeds, improve transfer visibility, review replenishment settings, or audit product mappings across ecommerce, warehouse, and point-of-sale systems.</p>
+<p>Measure whether the change works using agreed metrics such as stockout frequency, time to resolve mismatches, order cancellation rate, and inventory record accuracy. Compare equivalent periods and account for seasonal demand. Recommendations should follow from evidence rather than assumptions.</p>
+<h2>Build a portfolio project</h2>
+<p>Use a public or synthetic dataset, not confidential employer or customer data. A strong project can include:</p>
+<ol><li>A concise problem statement and definitions for inventory metrics.</li><li>An Excel data-quality audit with documented checks.</li><li>SQL queries for stock movement and SKU-location patterns.</li><li>A Power BI dashboard with clear filters and data-freshness indicators.</li><li>Three evidence-based findings and a prioritised action plan.</li><li>A limitations section covering missing events, snapshot frequency, and assumptions.</li></ol>
+<p>Share the reasoning behind your calculations, not just screenshots. Include a data dictionary, query logic, metric definitions, and a short explanation of how each recommendation follows from the evidence.</p>
+<h2>How this relates to Analytics Training in India</h2>
+<p>Practical <strong>Analytics Training in India</strong> should connect Excel, SQL, visualisation, and business reasoning to realistic questions. Inventory investigation is useful because an analyst must validate data, understand how systems represent a process, separate correlation from cause, and communicate a decision to non-technical stakeholders.</p>
+<p>When comparing courses, look for hands-on exercises involving data cleaning, multi-table SQL analysis, dashboard validation, and clear project documentation. Tools matter, but explaining assumptions and defending a recommendation is what turns analysis into useful business work.</p>
+<div class="cta"><h2>Explore Data Analytics Training in India</h2><p>Review the curriculum, practical projects, and learning support against your goals.</p><p><a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" rel="noopener">Explore the Data Analytics Certification Training in India course →</a></p></div>
+<p><a href="./">← Browse all Data Analytics blogs</a> · <a href="../">Back to the learning roadmap</a></p>
+</article></main><footer>Data Analytics Learning Roadmap · Practical learning resource</footer>
+</body></html>
