@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Are Growing, but Returns Are Rising Too: A Data Analytics Investigation</title>
+<meta name="description" content="Learn how analysts investigate rising product returns with Excel, SQL and Power BI, validate return-rate metrics, test possible causes and recommend evidence-based actions.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/sales-growing-returns-rising-data-analytics.html">
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f5f7fa;color:#202124;line-height:1.75}header{background:#111827;color:#fff;padding:38px 20px}header .wrap,main{max-width:900px;margin:auto}header a{color:#bfdbfe}main{padding:28px 20px}article{background:#fff;padding:32px;border-radius:12px}h1{font-size:36px;line-height:1.25}h2{margin-top:32px;color:#111827}a{color:#1d4ed8}pre{overflow:auto;white-space:pre-wrap;background:#f3f4f6;padding:16px;border-radius:8px}table{width:100%;border-collapse:collapse;margin:18px 0}th,td{border:1px solid #d1d5db;padding:10px;text-align:left}th{background:#f3f4f6}.callout{background:#eff6ff;border-left:4px solid #2563eb;padding:16px;margin:22px 0}.cta{background:#111827;color:#fff;padding:22px;border-radius:10px;margin-top:30px}.cta a{color:#bfdbfe}footer{text-align:center;padding:25px;color:#6b7280}@media(max-width:650px){h1{font-size:29px}article{padding:22px}table{font-size:14px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><p><a href="../">Data Analytics Learning Roadmap</a> / <a href="./">All Blogs</a></p><p>Practical Analytics Case Study · October 24, 2026</p></div></header>
+<main><article>
+<h1>Sales Are Growing, but Returns Are Rising Too: How Data Analysts Find the Real Problem</h1>
+<p>A retailer celebrates a 20% increase in sales, but the returns team is also processing more products than usual. Revenue reports look positive, yet returned orders can reduce net sales, increase handling costs, and create extra work for customer support and operations. The important question is not simply whether returns increased; it is whether returns are growing faster than sales, where the change is concentrated, and what the data can reliably tell us.</p>
+<p>In a practical analytics project, analysts can connect sales and returns records, validate the measures, compare product and regional patterns, and present evidence that helps the business decide what to investigate next.</p>
+<h2>Start with a clear business question</h2>
+<p>Define the question before opening a spreadsheet: <em>Which products, categories, channels, or regions have a rising return rate, and what operational factors should the team investigate?</em> Agree on the measurement window and define a return consistently. For example, decide whether a return rate is calculated by units, orders, or sales value. These measures answer different questions and should not be mixed.</p>
+<div class="callout"><strong>Important:</strong> a rise in the number of returns does not automatically mean product quality has worsened. If sales volume grew, returns may also rise while the return rate stays stable or even falls.</div>
+<h2>Step 1: Prepare and validate the data in Excel</h2>
+<p>Begin with sales order lines, product details, and return transactions. Keep an untouched copy of each source and record the extract date. Useful checks include:</p>
+<ul>
+<li>Find missing order IDs, SKU values, quantities, dates, and return reasons.</li>
+<li>Check duplicate records, while confirming whether repeated order IDs represent separate line items rather than errors.</li>
+<li>Standardize product identifiers, category names, dates, and return-status labels.</li>
+<li>Confirm that cancelled orders and pending returns are treated consistently.</li>
+<li>Check whether returns can occur in a different reporting period from the original sale.</li>
+<li>Reconcile row counts and sales totals with the source system before analysing trends.</li>
+</ul>
+<p>Excel filters, PivotTables, conditional formatting, COUNTIF, and XLOOKUP can help identify suspicious records and compare totals by product or month. Do not silently delete unusual rows; investigate and document any corrections.</p>
+<h2>Step 2: Calculate comparable return metrics</h2>
+<p>Use a measure that matches the business question. A simple unit return rate can be calculated as returned units divided by units sold for a comparable cohort and period. An order return rate instead uses returned orders divided by eligible orders. A value-based rate compares the value of returned goods with the relevant sales value, using a clearly stated accounting rule.</p>
+<p>For example, suppose a category sold 1,000 units and 80 units were returned in one period. Its unit return rate is 8%. In the next period, sales rise to 1,500 units and returns rise to 105 units. Returns increased in count, but the unit return rate is 7%. That pattern alone does not support the conclusion that the category is becoming less reliable.</p>
+<p>For accurate comparisons, align the numerator and denominator. Returns may lag the original sale, so recent sales cohorts can appear to have fewer returns simply because customers have not had enough time to return them. State this limitation clearly.</p>
+<h2>Step 3: Use SQL to find where return rates are changing</h2>
+<p>SQL can aggregate sales and return lines by product category. The following is an illustrative query: adapt table names, date logic, status filters, and return matching rules to the available database. It assumes the sales and return tables store unit quantities and that returned units can be grouped by SKU.</p>
+<pre>WITH sales_by_sku AS (
+  SELECT
+    sku,
+    SUM(quantity) AS units_sold
+  FROM sales_order_lines
+  WHERE order_status = 'completed'
+    AND order_date >= DATE '2026-09-01'
+    AND order_date <  DATE '2026-10-01'
+  GROUP BY sku
+),
+returns_by_sku AS (
+  SELECT
+    sku,
+    SUM(return_quantity) AS units_returned
+  FROM return_lines
+  WHERE return_status = 'accepted'
+    AND return_date >= DATE '2026-09-01'
+    AND return_date <  DATE '2026-11-01'
+  GROUP BY sku
+)
+SELECT
+  s.sku,
+  s.units_sold,
+  COALESCE(r.units_returned, 0) AS units_returned,
+  1.0 * COALESCE(r.units_returned, 0)
+    / NULLIF(s.units_sold, 0) AS return_ratio
+FROM sales_by_sku s
+LEFT JOIN returns_by_sku r
+  ON s.sku = r.sku
+ORDER BY return_ratio DESC;</pre>
+<p>This example is a starting point, not a universal accounting formula. It uses different sales and return windows to illustrate that return timing needs deliberate handling; for a production metric, link returns to their original sale where possible and compare mature cohorts. If returns can exceed sales in a short window because of earlier purchases, do not interpret the resulting ratio as a same-period cohort return rate.</p>
+<p>After validating the metric, join the product dimension to compare categories and product attributes. Add channel or region only when the data supports those comparisons. Check join cardinality to avoid multiplying sales or returns through duplicate product or order keys.</p>
+<h2>Step 4: Treat possible causes as hypotheses</h2>
+<p>Once a product or category stands out, develop explanations to test rather than jumping to a conclusion. A higher return rate could be associated with several factors:</p>
+<table><thead><tr><th>Pattern in the data</th><th>Hypothesis to test</th><th>Useful follow-up</th></tr></thead><tbody>
+<tr><td>Returns cluster around certain sizes or variants</td><td>Fit, sizing, or variant information may be unclear</td><td>Review variant-level rates and customer feedback</td></tr>
+<tr><td>Return reasons mention mismatch with listing</td><td>Product descriptions or images may set incorrect expectations</td><td>Audit listing details and compare reason codes</td></tr>
+<tr><td>Returns are concentrated in a delivery region</td><td>Shipping damage or delivery experience may be a factor</td><td>Compare carrier, packaging, delivery, and damage records</td></tr>
+<tr><td>A single batch has an unusual rate</td><td>A supplier or quality-control issue may exist</td><td>Inspect batch records and quality checks</td></tr>
+<tr><td>One channel shows a sudden change</td><td>Policy, customer mix, or recording practices may have changed</td><td>Check policy dates, channel definitions, and data capture</td></tr>
+</tbody></table>
+<p>Return reason fields can be incomplete or inconsistently entered. Treat them as useful signals, not perfect evidence. Compare multiple sources, check sample sizes, and document what would confirm or disprove each hypothesis.</p>
+<h2>Step 5: Build a Power BI dashboard for decisions</h2>
+<p>A decision-focused dashboard should help a team identify the next investigation, not just display a wall of charts. Consider these visuals:</p>
+<ul>
+<li><strong>Summary cards:</strong> units sold, units returned, return rate, and net sales, with definitions and reporting period visible.</li>
+<li><strong>Trend chart:</strong> sales and return rates over time, using comparable cohorts and noting incomplete return windows.</li>
+<li><strong>Category and SKU table:</strong> return rate, units sold, units returned, and sample size.</li>
+<li><strong>Reason breakdown:</strong> accepted return reasons by category, with unknown or blank reasons shown separately.</li>
+<li><strong>Region and channel comparison:</strong> use filters that allow meaningful comparisons without hiding small sample sizes.</li>
+<li><strong>Drill-through details:</strong> let authorised users inspect order and return records behind a result.</li>
+</ul>
+<p>Validate dashboard totals against source reports, check filter behaviour, and show the last successful refresh time. A return-rate card without its definition, denominator, or time window can mislead even when the calculation itself is technically correct.</p>
+<h2>Step 6: Recommend actions and measure the result</h2>
+<p>Prioritise recommendations by evidence, customer impact, and the effort needed to test them. Depending on the findings, a business might improve product information, inspect a supplier batch, review packaging, clarify size guidance, or investigate a delivery partner. These are possible actions only when supported by the analysis.</p>
+<p>Agree on a baseline and a follow-up period before making changes. Track the chosen return-rate measure alongside sales volume, customer complaints, net sales, and operational costs. Where possible, compare similar products or groups and account for seasonality or policy changes. Avoid claiming that a change caused an improvement if the data only shows that both happened at the same time.</p>
+<h2>Turn the investigation into a portfolio project</h2>
+<p>A portfolio-ready project should make the reasoning easy to review. Use public or synthetic data rather than confidential customer or employer records, and include:</p>
+<ol>
+<li>A concise business problem and written metric definitions.</li>
+<li>An Excel quality-check workbook or documented validation checklist.</li>
+<li>SQL queries with comments explaining joins, filters, and return-window assumptions.</li>
+<li>A Power BI dashboard with clear labels, filters, and data-refresh information.</li>
+<li>Three evidence-backed findings, each paired with a limitation or alternative explanation.</li>
+<li>A prioritised action plan and a proposed way to measure whether the action works.</li>
+</ol>
+<p>The project is stronger when it explains uncertainty. Show the difference between a descriptive finding (“this category has a higher observed return rate”) and a causal claim (“this product feature caused returns”). The second claim requires stronger evidence than a dashboard comparison alone.</p>
+<h2>Building practical analytics skills</h2>
+<p>This kind of investigation connects data cleaning, spreadsheet analysis, SQL aggregation, dashboard design, and business communication. When exploring <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" rel="noopener">Analytics Training in India</a>, look for learning that includes realistic datasets, hands-on practice, validation of metrics, and projects where you must explain assumptions as well as results.</p>
+<p>Tools are important, but the real value comes from asking a precise question, checking whether the data can answer it, and recommending the next step without overstating what the evidence proves.</p>
+<div class="cta"><h2>Keep learning with a practical project</h2><p>Use the steps in this case study to practise data validation, SQL analysis, dashboard reporting, and evidence-based recommendations.</p></div>
+<p><a href="./">← Browse all Data Analytics blogs</a> · <a href="../">Back to the learning roadmap</a></p>
+</article></main>
+<footer>Data Analytics Learning Roadmap · Practical learning resource</footer>
+</body>
+</html>
