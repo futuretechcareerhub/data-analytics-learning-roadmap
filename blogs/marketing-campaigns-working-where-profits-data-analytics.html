@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Marketing Team Says Campaigns Are Working, but Where Are the Profits? A Data Analytics Investigation</title>
+  <meta name="description" content="Learn how to investigate marketing campaign performance with Excel, SQL and Power BI, compare ROAS with profit, and make evidence-based budget recommendations.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/marketing-campaigns-working-where-profits-data-analytics.html">
+  <style>
+    body{font-family:Arial,sans-serif;line-height:1.75;color:#202124;margin:0;background:#f5f7fa}
+    header{background:#111827;color:#fff;padding:36px 20px}
+    header nav,main,footer{max-width:900px;margin:auto}
+    header nav a{color:#fff;margin-right:16px}
+    header p{color:#d1d5db}
+    main{background:#fff;padding:34px 24px;margin:28px auto;border-radius:12px}
+    h1{line-height:1.25;font-size:2.2rem}h2{margin-top:32px;color:#111827}
+    a{color:#1d4ed8}pre{overflow:auto;background:#f3f4f6;padding:16px;border-radius:8px}
+    .note{background:#f3f4f6;padding:16px;border-left:4px solid #64748b}
+    .cta{background:#111827;color:#fff;padding:22px;border-radius:10px;margin-top:28px}
+    .cta a{color:#fff;font-weight:bold}
+    footer{padding:24px 20px;color:#6b7280}
+    @media(max-width:600px){main{padding:24px 17px;margin:14px}h1{font-size:1.8rem}}
+  </style>
+</head>
+<body>
+<header><nav><a href="../">Home</a><a href="./">All Blogs</a></nav><p>Practical Data Analytics • Published October 26, 2026</p></header>
+<main>
+<article>
+<h1>The Marketing Team Says Campaigns Are Working, but Where Are the Profits? A Data Analytics Investigation</h1>
+<p>A campaign report can look impressive: clicks are rising, orders are coming in, and reported return on ad spend is above target. Yet the finance team may still be asking an uncomfortable question: <strong>why is the business not keeping more money?</strong></p>
+<p>This is a useful real-world analytics problem because campaign performance is not one number. Ad platforms may report attributed revenue, the commerce system records orders, and finance tracks discounts, returns, fulfilment costs and margin. If those measures are compared without checking definitions and time periods, a team can scale a campaign that looks successful but contributes little profit.</p>
+<p>This walkthrough demonstrates a repeatable investigation using Excel, SQL and Power BI. The figures below are hypothetical and are included only to explain the method—not as industry benchmarks or claims about a real company.</p>
+
+<h2>1. Start with a decision, not a dashboard</h2>
+<p>Before opening a spreadsheet, define the decision the analysis must support. For example:</p>
+<ul>
+<li>Which campaigns are generating profitable orders rather than just attributed sales?</li>
+<li>Are discounts, refunds or fulfilment costs changing the apparent result?</li>
+<li>Should the team increase, reduce or test spend on particular campaigns?</li>
+</ul>
+<p>Agree on the measurement window and attribution rules with marketing and finance. A seven-day click attribution report should not be compared casually with all sales recorded in the same calendar week. Campaigns may also differ in audience, objective and buying cycle, so comparisons need context.</p>
+
+<h2>2. Bring the right data together</h2>
+<p>A practical analysis may combine these datasets:</p>
+<ul>
+<li><strong>Campaign spend:</strong> date, campaign ID, channel, impressions, clicks and spend.</li>
+<li><strong>Orders:</strong> order ID, order date, customer or campaign identifier, order value and discount.</li>
+<li><strong>Returns and refunds:</strong> order ID, return date, refund amount and status.</li>
+<li><strong>Product economics:</strong> product cost, fulfilment cost and other variable costs where available.</li>
+</ul>
+<p>Keep stable campaign IDs and order IDs wherever possible. Check whether the same order appears more than once after joining tables; a one-to-many join between orders and item lines can inflate revenue if the query sums order-level totals repeatedly.</p>
+<p>In Excel, inspect blank campaign IDs, duplicate order IDs, inconsistent date formats, negative spend values and unexpected currency formats. Reconcile a sample of order totals against the source system before interpreting results. Document exclusions instead of silently deleting inconvenient rows.</p>
+
+<h2>3. Understand ROAS—and what it does not tell you</h2>
+<p>Return on ad spend (ROAS) is commonly calculated as attributed revenue divided by advertising spend:</p>
+<p><strong>ROAS = Attributed revenue ÷ Ad spend</strong></p>
+<p>A ROAS of 3.0 means the selected revenue measure is three times the ad spend. It does <em>not</em> mean the campaign produced a 300% profit margin. Product costs, discounts, returns, shipping subsidies and other variable costs are not necessarily included in that ratio.</p>
+<p>For a more useful commercial view, calculate a contribution estimate using agreed definitions:</p>
+<p><strong>Estimated contribution after ad spend = Net sales − product costs − variable fulfilment costs − ad spend</strong></p>
+<p>Net sales should reflect the business's agreed treatment of discounts, cancellations and refunds. Some costs may be unavailable or shared across campaigns; label the result as an estimate and explain what is excluded. Do not call it net profit unless all relevant costs and accounting rules are included.</p>
+
+<h2>4. Use Excel to validate the first picture</h2>
+<p>Build a campaign-level summary with spend, attributed revenue, orders, discounts, refunds and available variable costs. Add calculated fields for ROAS, cost per order and estimated contribution after ad spend. Use a pivot table to compare channel, campaign and week.</p>
+<p>Then test the numbers:</p>
+<ul>
+<li>Do campaign totals reconcile to the source platform for the same date range?</li>
+<li>Are cancelled orders excluded consistently?</li>
+<li>Are refunds linked to the original order, even when they occur later?</li>
+<li>Are attribution windows and currencies consistent?</li>
+<li>Does the result change materially when one unusually large order is removed?</li>
+</ul>
+<p>These checks matter because a clean-looking chart can still be based on mismatched definitions or duplicated rows.</p>
+
+<h2>5. Use SQL to compare campaigns consistently</h2>
+<p>After validating the tables, SQL can produce a repeatable summary. The following is illustrative SQL; adapt table names, join keys, refund logic and date rules to the actual database schema.</p>
+<pre><code>SELECT
+    c.campaign_id,
+    c.channel,
+    SUM(c.spend) AS ad_spend,
+    SUM(o.net_sales) AS net_sales,
+    SUM(o.variable_costs) AS variable_costs,
+    SUM(o.net_sales - o.variable_costs) AS contribution_before_ads,
+    SUM(o.net_sales - o.variable_costs) - SUM(c.spend)
+        AS estimated_contribution_after_ads,
+    SUM(o.net_sales) / NULLIF(SUM(c.spend), 0) AS roas
+FROM campaign_daily c
+LEFT JOIN campaign_order_summary o
+    ON c.campaign_id = o.campaign_id
+   AND c.report_date = o.report_date
+WHERE c.report_date >= DATE '2026-10-01'
+  AND c.report_date <  DATE '2026-10-26'
+GROUP BY c.campaign_id, c.channel;</code></pre>
+<p><strong>Important:</strong> this query assumes both inputs are already at compatible campaign-and-date grain. If campaign spend is daily but orders are at individual order or item level, aggregate each source to the intended grain before joining. Otherwise, the join can multiply spend or revenue. Also check division-by-zero behavior and whether net sales and variable costs use matching refund treatment.</p>
+<p>Once the summary is reliable, compare campaigns by more than ROAS. Include order volume, cost per order, estimated contribution, refund rate and the length of the observation window. A campaign with a high ROAS but very few orders may be less conclusive than one with a stable pattern across several weeks.</p>
+
+<h2>6. Build a Power BI dashboard around decisions</h2>
+<p>A useful dashboard should help a stakeholder move from a headline result to the reason behind it. Consider these elements:</p>
+<ul>
+<li><strong>Summary cards:</strong> ad spend, net sales, ROAS and estimated contribution after ad spend.</li>
+<li><strong>Campaign comparison:</strong> a table with spend, order volume, cost per order, refund rate and contribution estimate.</li>
+<li><strong>Trend chart:</strong> spend and contribution by week, with date filters clearly labelled.</li>
+<li><strong>Breakdowns:</strong> channel, campaign objective, product category and new versus returning customers where the data supports those segments.</li>
+<li><strong>Data notes:</strong> attribution window, refresh date, excluded records and costs not included in the contribution estimate.</li>
+</ul>
+<p>Avoid a single red/green score that hides uncertainty. Use tooltips or a notes panel to explain KPI definitions. Validate totals after filters, compare a few records with the source data, and make sure the dashboard's date slicer does not accidentally change the attribution period or refund window.</p>
+
+<h2>7. Turn findings into a responsible budget recommendation</h2>
+<p>Suppose one campaign reports strong ROAS but has heavy discounting and a high refund rate, while another has a lower ROAS and stronger estimated contribution. That pattern is a reason to investigate—not automatic proof that the second campaign should receive all the budget.</p>
+<p>Before recommending a shift:</p>
+<ol>
+<li>Check data completeness and whether both campaigns use comparable attribution rules.</li>
+<li>Segment by product, audience and customer type to look for mix effects.</li>
+<li>Review sample size and performance over multiple periods rather than relying on one short window.</li>
+<li>Separate observed correlation from causation. Attribution alone does not prove the ad created every sale.</li>
+<li>Propose a controlled budget test where practical, with a defined success metric, time window and guardrails.</li>
+</ol>
+<p>Present the recommendation with its evidence and limitations: what changed, which metric supports the change, what remains unknown, and how the team will judge the next test. This is more actionable than reporting that a campaign is simply “good” or “bad.”</p>
+
+<h2>8. Turn the investigation into a portfolio project</h2>
+<p>To demonstrate your process, create a small synthetic dataset with campaign spend, orders, refunds and variable costs. Clearly label it as simulated. Include:</p>
+<ul>
+<li>A short business brief and a data dictionary.</li>
+<li>Excel validation checks and a pivot-table summary.</li>
+<li>SQL queries with comments explaining join grain and metric definitions.</li>
+<li>A Power BI dashboard with filters and a visible methodology note.</li>
+<li>A one-page recommendation that distinguishes findings, assumptions and next tests.</li>
+</ul>
+<p>Do not invent business results or present simulated data as client work. A strong portfolio project shows how you checked the data, defined metrics, considered alternative explanations and communicated uncertainty—not just how polished the dashboard looks.</p>
+
+<h2>Final checklist</h2>
+<ul>
+<li>Revenue, spend, refunds and costs use compatible dates and definitions.</li>
+<li>Joins do not duplicate orders or multiply spend.</li>
+<li>ROAS is clearly distinguished from profit and contribution.</li>
+<li>Dashboard filters, totals and KPI definitions have been checked.</li>
+<li>Recommendations are tied to evidence and include a way to test them.</li>
+</ul>
+<p>The main lesson is simple: marketing performance should be evaluated against the business outcome the team actually cares about. Excel helps validate the first view, SQL makes the comparison repeatable, and Power BI helps communicate the result. None of the tools can replace careful metric definitions and honest interpretation.</p>
+
+<div class="cta"><h2>Build practical analytics skills</h2><p>If you want to strengthen your Excel, SQL, Power BI and business problem-solving workflow, explore <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" rel="noopener">Analytics Training in India</a> and compare the learning path with your goals.</p></div>
+</article>
+</main>
+<footer><a href="../">Home</a> · <a href="./">All Data Analytics Blogs</a></footer>
+</body>
+</html>
