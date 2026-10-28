@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders Are Coming In, but Deliveries Are Late: A Data Analytics Investigation</title>
+<meta name="description" content="Learn how to investigate delivery delays with Excel validation, SQL root-cause analysis and a Power BI dashboard for warehouses, carriers and locations.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/customers-orders-delivery-delays-data-analytics.html">
+<style>
+body{font-family:Arial,sans-serif;line-height:1.75;color:#202124;margin:0;background:#f5f7fa}header{background:#111827;color:#fff;padding:28px 20px}header nav,main,footer{max-width:900px;margin:auto}header nav a,footer a{color:#fff;margin-right:16px}header p{margin-bottom:0}main{background:#fff;margin:28px auto;padding:30px;border-radius:12px}h1{line-height:1.25;font-size:2.2rem}h2{margin-top:32px;color:#111827}h3{margin-top:22px}p,li{font-size:1.02rem}pre{white-space:pre-wrap;background:#f3f4f6;padding:16px;border-radius:8px;overflow-wrap:anywhere}.note{background:#f3f4f6;padding:14px 18px;border-left:4px solid #64748b}.cta{background:#111827;color:#fff;padding:22px;border-radius:10px;margin-top:32px}.cta h2{color:#fff;margin-top:0}.cta a{color:#fff}footer{padding:24px 20px;text-align:center}a{color:#2563eb}@media(max-width:650px){main{margin:12px;padding:20px}h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<header><nav><a href="../">Home</a><a href="./">All Data Analytics Blogs</a></nav><p>Practical Data Analytics · Business Investigation</p></header>
+<main>
+<article>
+<h1>Orders Are Coming In, but Deliveries Are Late: A Data Analytics Investigation</h1>
+<p><strong>Published: October 28, 2026</strong></p>
+<p>A business can report healthy order volume while customers are still receiving purchases late. The headline numbers may look fine, but late deliveries can increase support contacts, cancellations and refunds, and reduce repeat purchases. The useful question is not simply “How many orders shipped?” It is “Where, when and why are delivery promises being missed?”</p>
+<p>A data analyst can investigate this problem by checking order and delivery records in Excel, using SQL to isolate patterns, and building a Power BI dashboard that helps operations teams decide what to investigate next. This guide walks through a practical, portfolio-ready workflow without assuming that every delay has the same cause.</p>
+
+<h2>1. Define what counts as a late delivery</h2>
+<p>Before calculating performance, agree on the business definition. A promised delivery date, dispatch date and actual delivery date measure different stages of fulfilment. If teams use different definitions, two reports can disagree even when they use the same source data.</p>
+<ul>
+<li><strong>On-time delivery rate:</strong> delivered orders received on or before the promised date divided by eligible delivered orders.</li>
+<li><strong>Delay in days:</strong> actual delivery date minus promised delivery date, where positive values indicate lateness.</li>
+<li><strong>Dispatch delay:</strong> dispatch date minus order date, useful for identifying delays before a parcel leaves the warehouse.</li>
+<li><strong>Transit time:</strong> actual delivery date minus dispatch date, useful for studying carrier and route performance.</li>
+</ul>
+<p>Specify how to treat open orders, cancelled orders, partial shipments, weekends, public holidays and missing dates. An order that has not arrived yet should not automatically be treated as a completed late delivery; track overdue open orders separately.</p>
+<div class="note"><strong>Metric reminder:</strong> write the numerator, denominator, date rule and exclusions beside each KPI. A clear definition is more valuable than a dashboard full of ambiguous percentages.</div>
+
+<h2>2. Validate the records in Excel first</h2>
+<p>Start with a row-level dataset containing order ID, order date, promised date, dispatch date, actual delivery date, warehouse, shipping partner, destination region, service level and order status. Use a synthetic dataset for practice, or follow your organisation's privacy and access rules when working with real records.</p>
+<p>In Excel, check for duplicate order IDs, blank dates, impossible date sequences and inconsistent status labels. For a simple one-row-per-order table, a delay calculation can be written as:</p>
+<pre>=IF(OR([@[Actual Delivery Date]]="",[@[Promised Delivery Date]]=""),"",[@[Actual Delivery Date]]-[@[Promised Delivery Date]])</pre>
+<p>This formula leaves incomplete records blank rather than silently converting them into zero-day delays. Add a separate status check for orders that remain open after their promised date.</p>
+<p>Useful Excel checks include:</p>
+<ul>
+<li>Count duplicate IDs and investigate whether they represent legitimate split shipments or accidental duplicate rows.</li>
+<li>Flag dispatch dates earlier than order dates and delivery dates earlier than dispatch dates.</li>
+<li>Compare missing-date rates across warehouses and carriers; missing data may not be evenly distributed.</li>
+<li>Use pivot tables to compare order counts, late counts and median delay by month, warehouse and shipping partner.</li>
+<li>Reconcile totals with a trusted order-management or fulfilment report before moving to the next stage.</li>
+</ul>
+
+<h2>3. Use SQL to find where delays cluster</h2>
+<p>Once the definitions and data quality checks are clear, SQL makes the investigation repeatable. The following example assumes one record per order and a table named <code>delivery_orders</code>. Date-difference syntax varies by database, so adapt it for your SQL platform.</p>
+<pre>SELECT
+  warehouse,
+  shipping_partner,
+  COUNT(*) AS delivered_orders,
+  SUM(CASE
+        WHEN actual_delivery_date &gt; promised_delivery_date THEN 1
+        ELSE 0
+      END) AS late_orders,
+  AVG(CASE
+        WHEN actual_delivery_date &gt; promised_delivery_date
+        THEN 1.0 ELSE 0.0
+      END) AS late_order_rate
+FROM delivery_orders
+WHERE order_status = 'Delivered'
+  AND promised_delivery_date IS NOT NULL
+  AND actual_delivery_date IS NOT NULL
+GROUP BY warehouse, shipping_partner
+HAVING COUNT(*) &gt;= 30
+ORDER BY late_order_rate DESC;</pre>
+<p>The sample minimum of 30 orders is only an illustrative filter, not a universal statistical rule. Choose a threshold that suits the volume and risk of the operation. Also check whether the dataset contains multiple rows per order: joins to shipment events can multiply rows and inflate counts unless the query first establishes the correct grain.</p>
+<p>Next, break down the patterns by order week, destination, service level and product category where relevant. Compare both the late rate and the number of affected orders. A small route with a very high percentage may need a different response from a high-volume warehouse responsible for the largest number of late deliveries.</p>
+
+<h2>4. Separate warehouse delay from carrier transit delay</h2>
+<p>A useful investigation distinguishes stages rather than blaming a single team or partner. For each completed order, calculate time from order to dispatch and time from dispatch to delivery. Then compare each stage against a reasonable baseline for that service level and route.</p>
+<ul>
+<li><strong>Order-to-dispatch is rising:</strong> review picking queues, inventory availability, staffing patterns, cut-off times and order release rules.</li>
+<li><strong>Dispatch-to-delivery is rising:</strong> investigate carrier hand-offs, route capacity, distance, weather disruption and delivery-attempt records.</li>
+<li><strong>Only certain destinations are affected:</strong> inspect regional serviceability, route schedules and local delivery constraints.</li>
+<li><strong>One service level looks worse:</strong> verify that promised dates are comparable and that premium and standard orders are not mixed unfairly.</li>
+<li><strong>Delays spike during promotions:</strong> compare order volume with fulfilment capacity and carrier pickup capacity during the same period.</li>
+</ul>
+<p>These are hypotheses, not conclusions. A correlation between one carrier and a higher delay rate does not by itself prove the carrier caused the problem. Route mix, order complexity, promised service levels and the time period may differ. Validate comparisons and seek operational evidence before recommending a change.</p>
+
+<h2>5. Build a Power BI dashboard for action</h2>
+<p>A practical delivery-performance dashboard should answer a short sequence of operational questions rather than display every available field.</p>
+<ul>
+<li><strong>KPI cards:</strong> on-time delivery rate, late delivered orders, overdue open orders and median days late.</li>
+<li><strong>Trend chart:</strong> on-time rate and order volume by week, so volume spikes are visible alongside performance changes.</li>
+<li><strong>Warehouse and carrier matrix:</strong> order count, late rate and median delay, with a minimum-volume context.</li>
+<li><strong>Stage analysis:</strong> order-to-dispatch time versus dispatch-to-delivery time.</li>
+<li><strong>Location view:</strong> destination-region performance where location data is reliable and appropriate to display.</li>
+<li><strong>Detail table:</strong> overdue orders with promised date, current status and responsible workflow stage, restricted to users who need order-level information.</li>
+</ul>
+<p>Add filters for date range, warehouse, shipping partner, region and service level. Display the last refresh time, the KPI definitions and exclusions. Validate the dashboard totals against the SQL output and test whether slicers change both numerator and denominator correctly. Protect customer names, addresses, phone numbers and other personal data; they are not needed for a high-level performance view.</p>
+
+<h2>6. Turn findings into a testable recommendation</h2>
+<p>Imagine a practice analysis shows that one warehouse has a growing order-to-dispatch delay during high-volume weeks, while carrier transit time remains relatively stable. The appropriate next step would be to investigate pick-and-pack capacity, inventory exceptions and dispatch cut-off processes—not to assume that the carrier is at fault.</p>
+<p>A strong recommendation should identify the affected segment, show the supporting metric and time period, describe plausible alternative explanations, and propose a measurable next step. For example, operations might pilot a revised queue-prioritisation rule for a limited period and compare dispatch time, late delivery rate and cancellation rate against a suitable baseline. Define guardrails so that improving speed does not create more picking errors or damage.</p>
+<p>Report what the analysis can and cannot establish. If the data only shows an association, say so. If the sample is small or date fields are incomplete, flag that limitation before proposing an expensive operational change.</p>
+
+<h2>7. Make this a portfolio-ready analytics project</h2>
+<p>Build a small synthetic dataset and document your work as a case study. Clearly label simulated data; never present invented findings as a real client engagement. Include:</p>
+<ol>
+<li>A concise business problem, metric definitions and data dictionary.</li>
+<li>Excel validation checks and a short data-quality summary.</li>
+<li>Commented SQL queries for delivery KPIs, stage timing and segment comparisons.</li>
+<li>A Power BI dashboard with clear filters, definitions and refresh information.</li>
+<li>A one-page insight brief showing evidence, limitations, recommended test and success measures.</li>
+</ol>
+<p>This demonstrates more than tool familiarity. It shows that you can define a business question, validate records, avoid misleading comparisons, explain a pattern and communicate a practical next action.</p>
+
+<h2>Final checklist</h2>
+<ul>
+<li>Promised, dispatch and actual delivery dates have clear definitions.</li>
+<li>Open, cancelled and split-shipment records are handled explicitly.</li>
+<li>Duplicate rows and missing dates have been investigated.</li>
+<li>Late rates are compared alongside volume and service-level differences.</li>
+<li>Warehouse and carrier hypotheses are checked against stage-level evidence.</li>
+<li>Dashboard totals reconcile with the SQL analysis and protect customer data.</li>
+<li>Recommendations include a test, a baseline and guardrail metrics.</li>
+</ul>
+<p>Delivery-delay analysis is most useful when it traces the customer promise through each fulfilment stage. Excel helps expose record-level issues, SQL makes segment comparisons repeatable, and Power BI helps teams see where to investigate. The goal is not just to report that deliveries are late—it is to find a defensible next step.</p>
+
+<div class="cta"><h2>Build practical analytics skills</h2><p>To strengthen your Excel, SQL, Power BI and business problem-solving workflow, explore <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" rel="noopener">Analytics Training in India</a> and compare the learning path with your goals.</p></div>
+</article>
+</main>
+<footer><a href="../">Home</a> · <a href="./">All Data Analytics Blogs</a></footer>
+</body>
+</html>
