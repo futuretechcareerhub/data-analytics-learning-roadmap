@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Do Customers Abandon Their Shopping Carts? A Data Analytics Investigation</title>
+  <meta name="description" content="Learn how to investigate shopping cart abandonment using Excel, SQL and Power BI. Analyse checkout drop-offs, customer segments and practical ways to improve conversion.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/why-customers-abandon-shopping-carts-data-analytics.html">
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;background:#f5f7fa;color:#202124;line-height:1.75}
+    header{background:#111827;color:#fff;padding:42px 20px;text-align:center}
+    header p{max-width:850px;margin:12px auto}
+    main{max-width:900px;margin:32px auto;padding:0 20px}
+    article,.cta{background:#fff;padding:30px;margin-bottom:24px;border-radius:12px}
+    h1{font-size:36px;line-height:1.25}h2{color:#111827;margin-top:30px}
+    a{color:#2563eb}pre{background:#111827;color:#f9fafb;padding:18px;overflow-x:auto;border-radius:8px}
+    code{font-family:Consolas,monospace}.note{background:#eef2ff;padding:16px;border-radius:8px}
+    .cta{background:#111827;color:#fff}.cta h2,.cta a{color:#fff}
+    footer{text-align:center;padding:28px;color:#666}
+    @media(max-width:650px){h1{font-size:29px}article,.cta{padding:22px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Why Do Customers Abandon Their Shopping Carts? A Data Analytics Investigation</h1>
+  <p>A practical e-commerce case study using Excel, SQL and Power BI to find where shoppers leave and what a business can investigate next.</p>
+</header>
+<main>
+  <p><a href="../">Home</a> | <a href="./">All Data Analytics Blogs</a></p>
+  <article>
+    <p><strong>Published:</strong> November 2, 2026</p>
+    <p>An online store may attract visitors, receive product views and add-to-cart activity, yet still miss its sales target. One possible reason is that shoppers leave before completing checkout. A high cart abandonment rate is a signal to investigate—not proof of one particular problem.</p>
+    <p>In this practical data analytics investigation, we will follow the customer journey from cart creation to completed purchase. We will use Excel to validate the data, SQL to locate drop-off patterns and Power BI to communicate findings. The goal is to turn a broad concern into specific, testable business questions.</p>
+
+    <h2>1. Define the business question before analysing data</h2>
+    <p>Start with a clear question: <strong>At which stage of the shopping journey are eligible shoppers leaving, and which segments show the largest differences?</strong></p>
+    <p>Map the journey into measurable events, such as:</p>
+    <ul>
+      <li><strong>Product view:</strong> a shopper views a product.</li>
+      <li><strong>Add to cart:</strong> a product is added to a cart.</li>
+      <li><strong>Checkout started:</strong> the shopper begins checkout.</li>
+      <li><strong>Payment attempted:</strong> a payment attempt is recorded.</li>
+      <li><strong>Purchase completed:</strong> a valid order is confirmed.</li>
+    </ul>
+    <p>Agree on the unit of analysis. A session-based funnel answers a different question from a cart-based or user-based funnel. Also define the observation window, timezone, treatment of repeat visits and what counts as a completed order before calculating a rate.</p>
+
+    <h2>2. Prepare and validate the data in Excel</h2>
+    <p>A useful practice dataset may contain cart ID, customer ID, session ID, event name, event timestamp, product category, device type, traffic source, cart value, shipping charge, discount, payment method and order status. Keep personally identifying information out of a learning dataset.</p>
+    <p>In Excel, check:</p>
+    <ul>
+      <li>Duplicate event IDs and repeated records.</li>
+      <li>Missing cart, session or timestamp values.</li>
+      <li>Inconsistent event names and category labels.</li>
+      <li>Events that appear in an impossible order, such as a purchase timestamp earlier than checkout.</li>
+      <li>Test orders, cancelled orders and failed payment attempts that need separate treatment.</li>
+      <li>Whether cart value and order value use the same currency and tax/shipping rules.</li>
+    </ul>
+    <p>Use filters, conditional formatting, PivotTables and lookup functions to inspect records and compare event counts. Document every exclusion so another analyst can reproduce the result.</p>
+
+    <h2>3. Use SQL to find where shoppers drop off</h2>
+    <p>Once the event data is consistent, SQL can summarise the funnel. The example below assumes one row per recorded event in a table named <code>shopping_events</code>. Adapt column names and the definition of a session to the actual dataset.</p>
+    <pre><code>WITH session_steps AS (
+  SELECT
+    session_id,
+    MAX(CASE WHEN event_name = 'add_to_cart'
+             THEN 1 ELSE 0 END) AS added_to_cart,
+    MAX(CASE WHEN event_name = 'checkout_started'
+             THEN 1 ELSE 0 END) AS checkout_started,
+    MAX(CASE WHEN event_name = 'payment_attempted'
+             THEN 1 ELSE 0 END) AS payment_attempted,
+    MAX(CASE WHEN event_name = 'purchase_completed'
+             THEN 1 ELSE 0 END) AS purchased
+  FROM shopping_events
+  WHERE event_timestamp &gt;= '2026-10-01'
+    AND event_timestamp &lt; '2026-11-01'
+  GROUP BY session_id
+)
+SELECT
+  COUNT(*) AS sessions,
+  SUM(added_to_cart) AS cart_sessions,
+  SUM(checkout_started) AS checkout_sessions,
+  SUM(payment_attempted) AS payment_sessions,
+  SUM(purchased) AS purchase_sessions
+FROM session_steps
+WHERE added_to_cart = 1;</code></pre>
+    <p>This query creates a simple session-level view. In a production analysis, verify that events belong to the same session and that a purchase is correctly attributed to the relevant cart. If the business question is specifically about carts, use a stable cart ID rather than assuming session ID and cart ID are interchangeable.</p>
+
+    <h2>4. Calculate the right metrics</h2>
+    <p>For a defined population and time window, a basic cart abandonment rate can be expressed as:</p>
+    <p><strong>Cart abandonment rate = (Eligible carts − Purchased carts) ÷ Eligible carts × 100</strong></p>
+    <p>State what “eligible cart” means. For example, exclude internal test activity and decide how to handle duplicate carts, expired carts and purchases completed in a later session. Do not compare rates calculated with different definitions.</p>
+    <p>Useful supporting metrics include:</p>
+    <ul>
+      <li><strong>Checkout initiation rate:</strong> checkout-started carts divided by eligible carts.</li>
+      <li><strong>Checkout completion rate:</strong> completed purchases divided by checkout-started carts.</li>
+      <li><strong>Payment failure rate:</strong> failed payment attempts divided by payment attempts.</li>
+      <li><strong>Time to purchase:</strong> elapsed time between the selected starting event and purchase.</li>
+      <li><strong>Abandoned cart value:</strong> the value of eligible carts without a matched purchase, using a clearly documented valuation rule.</li>
+    </ul>
+    <p class="note">A funnel is not automatically a causal explanation. A lower conversion rate on one device or traffic source identifies a pattern to investigate; it does not prove that the device or source caused abandonment.</p>
+
+    <h2>5. Segment the results to uncover useful patterns</h2>
+    <p>Compare abandonment and stage-to-stage conversion by:</p>
+    <ul>
+      <li><strong>Device:</strong> mobile, desktop and tablet.</li>
+      <li><strong>Traffic source:</strong> organic search, paid campaigns, email and referral.</li>
+      <li><strong>Product category:</strong> categories with different prices, delivery needs or purchase consideration.</li>
+      <li><strong>Cart value:</strong> value bands that may reveal sensitivity to shipping or total cost.</li>
+      <li><strong>Payment method:</strong> where enough reliable payment-attempt data is available.</li>
+      <li><strong>New versus returning shoppers:</strong> using a consistent customer definition.</li>
+    </ul>
+    <p>Check sample sizes alongside percentages. A segment with very few carts can show a volatile rate. Compare equivalent periods and account for promotions, seasonality, stock availability and changes in campaign mix.</p>
+
+    <h2>6. Build a decision-ready Power BI dashboard</h2>
+    <p>A focused dashboard should help an e-commerce manager move from “cart abandonment is high” to “which stage and segment should we investigate first?” Consider these visuals:</p>
+    <ul>
+      <li><strong>KPI cards:</strong> eligible carts, purchased carts, abandonment rate and checkout completion rate.</li>
+      <li><strong>Funnel visual:</strong> cart, checkout, payment and purchase counts.</li>
+      <li><strong>Bar chart:</strong> abandonment rate by device, category or traffic source.</li>
+      <li><strong>Trend line:</strong> daily or weekly abandonment rate with a consistent definition.</li>
+      <li><strong>Detail table:</strong> segment, eligible cart count, purchase count, rate and sample size.</li>
+      <li><strong>Slicers:</strong> date range, device, traffic source and category.</li>
+    </ul>
+    <p>Display the reporting period, metric definitions and data refresh date. Make sure filters affect all relevant visuals consistently, and reconcile dashboard totals with the SQL output before sharing.</p>
+
+    <h2>7. Turn patterns into hypotheses and next steps</h2>
+    <p>Use the evidence to decide what to test—not to jump straight to a conclusion. Examples include:</p>
+    <ul>
+      <li>If mobile checkout has a lower completion rate, review page speed, form usability and error logs on mobile devices.</li>
+      <li>If many shoppers leave after shipping costs appear, test clearer delivery-cost information earlier in the journey.</li>
+      <li>If payment attempts fail more often for one method, review payment-provider responses and technical errors.</li>
+      <li>If a product category has unusually high abandonment, check stock availability, delivery estimates, product information and pricing.</li>
+    </ul>
+    <p>Prioritise issues by potential business impact, confidence in the data, effort and customer experience. Where possible, run a controlled experiment and compare results against a pre-defined success metric. Monitor guardrails such as refunds, cancellations and support contacts so a short-term conversion gain does not hide a wider problem.</p>
+
+    <h2>8. Make it a portfolio-ready data analytics project</h2>
+    <p>To present this work as a portfolio case study, include:</p>
+    <ol>
+      <li>A short business problem statement and clearly defined funnel.</li>
+      <li>A data dictionary and notes on cleaning decisions.</li>
+      <li>Excel validation evidence and SQL queries.</li>
+      <li>A Power BI dashboard with metric definitions.</li>
+      <li>Three to five evidence-backed observations, with sample sizes.</li>
+      <li>Prioritised recommendations and a proposed experiment.</li>
+      <li>A limitations section explaining attribution, missing events and assumptions.</li>
+    </ol>
+    <p>Never invent results to make the project look impressive. If you use synthetic data, label it clearly and describe the findings as a demonstration rather than real customer behaviour.</p>
+
+    <h2>How practical training supports this workflow</h2>
+    <p>A strong learning path connects tools to a complete business problem: clean and validate data in Excel, query it with SQL, build a clear Power BI report and explain what decision the evidence supports. When comparing programmes, look for hands-on assignments, realistic datasets, feedback on projects and opportunities to explain your reasoning—not only a list of software topics.</p>
+    <p>If you are exploring <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener">Best Data Analytics Training in India</a>, review the course curriculum and practical project work against the skills used in this investigation.</p>
+
+    <h2>Conclusion</h2>
+    <p>Shopping cart abandonment is a useful case study because it combines event data, metric definitions, segmentation and business decision-making. Excel helps establish data quality, SQL reveals where the journey changes and Power BI makes the patterns easier to discuss. The most valuable outcome is not simply a percentage—it is a transparent analysis that helps a team decide what to investigate and test next.</p>
+  </article>
+  <section class="cta">
+    <h2>Explore Data Analytics Training in India</h2>
+    <p>Build practical skills in Excel, SQL, Power BI and business-focused analytics projects.</p>
+    <p><a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener">Explore the Data Analytics Course</a></p>
+  </section>
+  <p><a href="./">← Browse all Data Analytics Blogs</a> | <a href="../">Return to Learning Roadmap</a></p>
+</main>
+<footer>Data Analytics Learning Roadmap | Learning Resource</footer>
+</body>
+</html>
