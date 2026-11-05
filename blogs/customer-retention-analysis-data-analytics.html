@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Customers Stop Buying: A Practical Customer Retention Analysis Using Data</title>
+<meta name="description" content="Learn how to analyse customer repeat purchases with Excel, SQL and Power BI, identify inactive customers, investigate retention patterns and recommend evidence-based actions.">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/customer-retention-analysis-data-analytics.html">
+<meta name="robots" content="index,follow">
+</head>
+<body>
+<header><nav aria-label="Main navigation"><a href="../">Home</a> | <a href="./">All Data Analytics Blogs</a></nav></header>
+<main><article>
+<p>Published: November 5, 2026</p>
+<h1>Why Customers Stop Buying: A Practical Customer Retention Analysis Using Data</h1>
+<p>Getting a new customer is only one part of growing a business. If customers make one purchase and never return, the company may need to spend more to replace them. Customer retention analysis helps a business understand repeat-purchase behaviour, spot changes in engagement and decide where to investigate further.</p>
+<p>In this practical, fictional e-commerce example, we will use Excel, SQL and Power BI to explore customer activity. The workflow is also a useful project to practise while comparing hands-on <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">analytics training in India</a>.</p>
+<h2>The business problem: repeat purchases are declining</h2>
+<p>Imagine an online store has a steady flow of new customers, but its monthly repeat orders are falling. The marketing team wants to send more promotional emails, while the operations team wonders whether delivery delays or product issues are affecting customer experience.</p>
+<p>Before recommending a campaign, define the question: which customer groups are returning less often, when did the change begin, and what available data could help explain the pattern? Do not assume that every inactive customer has churned; some products are purchased infrequently by design.</p>
+<h2>Step 1: Define customer retention metrics</h2>
+<p>Choose metrics that match the business model and purchase cycle. Common measures include:</p>
+<ul>
+<li><strong>Repeat purchase rate:</strong> the share of customers who made more than one purchase in a defined period.</li>
+<li><strong>Repeat purchase count:</strong> how many orders returning customers place in the period.</li>
+<li><strong>Time between purchases:</strong> the number of days between a customer's consecutive orders.</li>
+<li><strong>Customer cohort retention:</strong> the share of a group of customers who return in later periods after their first purchase.</li>
+<li><strong>Inactive customer count:</strong> customers whose last purchase is older than a chosen threshold.</li>
+</ul>
+<p>Write down each metric's definition, date window and exclusions. A 30-day inactivity rule may make sense for a grocery subscription but be misleading for furniture or other occasional purchases.</p>
+<h2>Step 2: Prepare and inspect the data in Excel</h2>
+<p>Start with a transaction file containing a customer ID, order ID, order date, order value, product category and (if available) delivery or return information. Check its reliability before calculating retention.</p>
+<ul>
+<li>Look for missing customer IDs and invalid order dates.</li>
+<li>Check duplicate order records and investigate unusual order values.</li>
+<li>Separate cancelled orders and refunds according to the agreed business rules.</li>
+<li>Standardise date formats and customer identifiers.</li>
+<li>Use pivot tables to count unique customers and repeat orders by month.</li>
+</ul>
+<p>For a first view, create a customer-level summary with first purchase date, most recent purchase date and total order count. Keep a note of the cleaning steps so the analysis can be repeated.</p>
+<h2>Step 3: Use SQL to identify repeat and inactive customers</h2>
+<p>SQL can summarise purchase history and calculate useful customer-level fields. The example below uses a simplified orders table:</p>
+<pre><code>SELECT
+  customer_id,
+  MIN(order_date) AS first_order_date,
+  MAX(order_date) AS last_order_date,
+  COUNT(DISTINCT order_id) AS order_count,
+  SUM(order_value) AS lifetime_order_value
+FROM orders
+WHERE order_status = 'Completed'
+GROUP BY customer_id;</code></pre>
+<p>This query is illustrative. Adjust table names, status rules and treatment of refunds to match your dataset. To identify customers who may need attention, compare their last order date with a business-defined reference date and inactivity threshold.</p>
+<p>You can also group customers by the month of their first purchase to create cohorts. Then compare how many customers from each cohort make another purchase in later months. Cohort analysis can reveal whether retention is changing for newer customer groups, even when total sales look stable.</p>
+<h2>Step 4: Investigate where retention changes</h2>
+<p>Once the summary is ready, segment the results to find patterns worth testing. Consider:</p>
+<ul>
+<li><strong>Acquisition channel:</strong> do customers from one channel return less often?</li>
+<li><strong>Product category:</strong> are some first purchases more likely to lead to another order?</li>
+<li><strong>Region:</strong> are repeat-purchase patterns different across delivery areas?</li>
+<li><strong>Customer cohort:</strong> do recent customer groups behave differently from older groups?</li>
+<li><strong>Order experience:</strong> where delivery, return or support data exists, does it align with changes in repeat purchases?</li>
+</ul>
+<p>These comparisons show associations, not automatic proof of cause. For example, a channel may attract customers who were always more likely to make a single purchase. Check the customer mix and business context before attributing the pattern to a campaign or service issue.</p>
+<h2>Step 5: Build a Power BI retention dashboard</h2>
+<p>A useful dashboard should help a stakeholder answer focused questions quickly. You might include:</p>
+<ul>
+<li>KPI cards for active customers, repeat purchase rate and returning customer count.</li>
+<li>A monthly trend of new and returning customers.</li>
+<li>A cohort matrix showing customer activity after the first purchase.</li>
+<li>A bar chart comparing repeat purchase rate by channel or category.</li>
+<li>A table of customers who meet the agreed inactivity definition, with appropriate access controls.</li>
+<li>Filters for cohort month, region, category and acquisition channel.</li>
+</ul>
+<p>Use clear labels and explain the date window and inactivity rule. Validate dashboard totals against SQL or Excel, and test that filters do not create misleading comparisons. Avoid exposing personal customer details in portfolio screenshots or public reports.</p>
+<h2>Step 6: Turn the findings into a retention experiment</h2>
+<p>Suppose a particular customer cohort has a lower repeat-purchase rate than earlier cohorts. Rather than immediately sending discounts to everyone, investigate the possible reasons and design a small, measurable test.</p>
+<p>For example, the business might test a helpful product reminder for customers who have not reordered within the normal purchase cycle. Define the eligible group, choose a comparison group where appropriate, and measure repeat purchases over a stated period. Track margin as well as order count so a discount-driven increase does not hide an unprofitable result.</p>
+<p>A clear recommendation should state what the data shows, what it cannot establish, what action to test, who owns it and how success will be measured.</p>
+<h2>How to present this project in your portfolio</h2>
+<p>Make the project easy for another person to understand and reproduce. Include:</p>
+<ol>
+<li><strong>Business question:</strong> explain the retention problem and why it matters.</li>
+<li><strong>Metric definitions:</strong> document repeat purchase, cohort and inactivity rules.</li>
+<li><strong>Data preparation:</strong> describe validation and cleaning decisions.</li>
+<li><strong>Analysis:</strong> include SQL queries and the segments or cohorts examined.</li>
+<li><strong>Dashboard:</strong> show the key trends with readable labels and filters.</li>
+<li><strong>Recommendation:</strong> present an evidence-based experiment and success metric.</li>
+</ol>
+<p>Use a synthetic or public dataset and never publish confidential customer information. Be prepared to explain how you calculated each metric and why you selected the time window.</p>
+<h2>What to look for in analytics training in India</h2>
+<p>When evaluating a course, look beyond a list of software tools. Check whether it gives you practical opportunities to:</p>
+<ul>
+<li>Clean and validate spreadsheet data in Excel.</li>
+<li>Write SQL queries using grouping, joins, date functions and aggregations.</li>
+<li>Build Power BI dashboards with meaningful measures and filters.</li>
+<li>Interpret customer behaviour without confusing correlation with causation.</li>
+<li>Complete an end-to-end project and explain the business recommendation.</li>
+<li>Receive feedback on analytical accuracy, presentation and problem-solving.</li>
+</ul>
+<p>Hands-on practice matters because real analysis involves defining metrics, checking assumptions and communicating limitations—not just creating charts.</p>
+<h2>Start practising customer retention analysis</h2>
+<p>Choose a small transaction dataset and work through the full process: define a repeat-purchase metric, clean the records, calculate customer-level summaries, compare cohorts and build a dashboard. Finish with one practical recommendation that could be tested and measured.</p>
+<p>If you are exploring structured learning options, review <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">TechPratham's Data Analytics Certification Training in India</a> and compare its learning approach with your goals, practice requirements and portfolio plans.</p>
+<p>Explore more practical guides on the <a href="../">Data Analytics Learning Roadmap homepage</a> or browse <a href="./">all data analytics blogs</a>.</p>
+</article></main>
+<footer><p>Data Analytics Learning Roadmap</p></footer>
+</body>
+</html>
