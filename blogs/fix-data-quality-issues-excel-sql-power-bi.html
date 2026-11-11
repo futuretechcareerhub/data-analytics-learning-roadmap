@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Messy Data to Clear Insights: How to Find and Fix Data Quality Issues</title><meta name="description" content="Learn how to identify and fix missing values, duplicate records and inconsistent data using Excel, SQL and Power BI before building reliable business reports.">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/fix-data-quality-issues-excel-sql-power-bi.html">
+<meta name="robots" content="index,follow"></head>
+<body><header><nav aria-label="Main navigation"><a href="../">Home</a> | <a href="./">All Data Analytics Blogs</a></nav></header>
+<main><article><p>Published: November 11, 2026</p><h1>From Messy Data to Clear Insights: How to Find and Fix Data Quality Issues</h1>
+<p>A polished dashboard can still lead to the wrong decision if its underlying data is incomplete, duplicated or inconsistent. Before calculating revenue, comparing regions or presenting trends, an analyst needs to establish whether the dataset can be trusted.</p>
+<p>Data quality work is not simply deleting blank cells. It means identifying issues, understanding their source, applying transparent rules and checking that the cleaned data still represents the business accurately. This guide walks through a repeatable workflow using Excel, SQL and Power BI—skills worth practising while exploring <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">Data Analytics training in India</a>.</p>
+<h2>Why data quality matters</h2>
+<p>Imagine a retailer receives sales records from several branches. One branch records a region as “North Zone”, another uses “north zone”, and a third uses “N Zone”. Some orders appear twice after a file import, while a few transaction dates are blank. If these issues are ignored, regional totals may be split incorrectly, sales may be overstated and monthly reporting may become unreliable.</p>
+<p>Useful data quality dimensions include accuracy, completeness, consistency, validity, uniqueness and timeliness. Which dimension matters most depends on the business question. A missing customer age may not affect a sales total, while a missing order date can make monthly analysis impossible.</p>
+<h2>Step 1: Understand the dataset before changing it</h2>
+<p>Document what each row represents and what each field means. A sales dataset might contain order_id, order_date, customer_id, region, product, quantity, unit_price and order_status.</p>
+<ul><li>Confirm the expected grain: one row per order, order line or customer.</li><li>Check column names, data types, date ranges and units.</li><li>Identify required fields and optional fields.</li><li>Ask the data owner how cancellations, refunds and returns are recorded.</li><li>Keep an untouched copy of the original data for traceability.</li></ul>
+<p>Do not remove every blank or unusual value immediately. First decide whether it is an error, a valid exception or information that needs clarification.</p>
+<h2>Step 2: Find common issues in Excel</h2>
+<p>Excel is a practical starting point for profiling a small or medium-sized dataset. Convert the range into a table, enable filters and inspect each column.</p>
+<h3>Missing values</h3><p>Filter important columns for blanks or use <code>=COUNTBLANK(Table1[order_date])</code> to count missing dates. Correct a value only from a reliable source. Otherwise, mark it as unknown or exclude it from a particular calculation with the limitation documented. Never fill blanks with arbitrary values just to make a sheet look complete.</p>
+<h3>Duplicate records</h3><p>Use conditional formatting or Remove Duplicates to investigate repeated rows. First define the unique key. Two order lines can share an order ID and still be legitimate if an order contains multiple products. Define duplicates using the business grain, not one convenient column.</p>
+<h3>Inconsistent formats</h3><p>Functions such as <code>TRIM</code>, <code>CLEAN</code>, <code>UPPER</code> and <code>PROPER</code> can help standardise text after you decide on a convention. Check dates stored as text, numbers stored as text and currency values using different units.</p>
+<h2>Step 3: Use SQL for repeatable quality checks</h2>
+<p>SQL makes it easier to profile larger tables and repeat checks after each refresh. These examples use a simplified sales table; adapt names and rules to your database.</p>
+<h3>Find missing values</h3><pre><code>SELECT
+  COUNT(*) AS total_rows,
+  SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) AS missing_order_ids,
+  SUM(CASE WHEN order_date IS NULL THEN 1 ELSE 0 END) AS missing_order_dates,
+  SUM(CASE WHEN customer_id IS NULL THEN 1 ELSE 0 END) AS missing_customer_ids
+FROM sales;</code></pre>
+<h3>Check possible duplicate order lines</h3><pre><code>SELECT order_id, product_id, COUNT(*) AS record_count
+FROM sales
+GROUP BY order_id, product_id
+HAVING COUNT(*) &gt; 1;</code></pre>
+<p>This check is appropriate only if the business confirms that an order can contain a product once. If repeated product lines are allowed, include the actual line identifier or another suitable key.</p>
+<h3>Find values outside expected rules</h3><pre><code>SELECT *
+FROM sales
+WHERE quantity &lt;= 0
+   OR unit_price &lt; 0
+   OR order_date &gt; CURRENT_DATE;</code></pre>
+<p>These are examples, not universal rules. Negative quantities or prices may represent valid returns or adjustments. Confirm the data model before labelling records as errors.</p>
+<h2>Step 4: Create a documented cleaning process</h2>
+<p>Maintain an issue log containing the column, issue type, affected record count, business impact, agreed treatment and validation result. This makes the process reviewable and repeatable.</p>
+<ul><li>Correct formatting problems using consistent, documented rules.</li><li>Resolve missing critical values from an authoritative source where possible.</li><li>Quarantine records that cannot be safely corrected instead of silently deleting them.</li><li>Remove confirmed duplicates only after defining the correct unique key.</li><li>Use a mapping table to standardise category variants.</li><li>Record row counts before and after each transformation.</li></ul>
+<p>Distinguish between fixing a value and excluding a record from one analysis. A transaction with a missing date might still be useful for a product count even if it cannot be included in monthly trends.</p>
+<h2>Step 5: Validate the cleaned data in Power BI</h2>
+<p>Power Query can support repeatable transformations such as changing data types, trimming text, replacing known category variants and identifying duplicates. Apply transformations in a clear sequence and give each step a meaningful name.</p>
+<p>Before building visuals, compare key totals with the source system or an independently calculated SQL result. Check whether joins multiply rows unexpectedly, relationships use the intended keys and filters produce sensible totals. A dashboard should make important data limitations visible.</p>
+<p>Useful quality indicators include the percentage of records with valid dates, missing required identifiers, confirmed duplicate keys, values outside agreed ranges and the last successful refresh date.</p>
+<h2>Step 6: Turn the workflow into a portfolio project</h2>
+<p>Use a fictional retail dataset with deliberately introduced issues: inconsistent region names, duplicate rows, missing dates and invalid quantities. Show how you investigated and handled each issue.</p>
+<ol><li><strong>Business context:</strong> explain why accurate regional sales reporting matters.</li><li><strong>Data profiling:</strong> show initial row counts, column types and an issue summary.</li><li><strong>Excel checks:</strong> document missing-value, duplicate and formatting checks.</li><li><strong>SQL validation:</strong> include queries for nulls, duplicate keys and rule violations.</li><li><strong>Power Query workflow:</strong> show the transformations and their order.</li><li><strong>Final report:</strong> present sales insights alongside data quality indicators.</li><li><strong>Reflection:</strong> explain which records were corrected, excluded or left unresolved, and why.</li></ol>
+<p>Use public or synthetic data and never publish private customer or business information. Include a README explaining assumptions so another person can reproduce the work.</p>
+<h2>What to practise in Data Analytics training in India</h2>
+<p>Look for practical exercises that connect the tools rather than teaching them in isolation. You should get opportunities to profile spreadsheets, write SQL validation queries, use Power Query for repeatable cleaning, build Power BI reports and explain how data issues affect business conclusions.</p>
+<p>Check whether projects include feedback on analytical reasoning, accuracy and communication. A strong analyst should explain not only what was changed, but why the change was justified and what uncertainty remains.</p>
+<h2>Final takeaway</h2>
+<p>Reliable analysis begins before the first chart. Understand the dataset, define business rules, profile records, document corrections and validate the output. Excel helps with quick inspection, SQL supports repeatable checks and Power BI helps create a transparent reporting workflow.</p>
+<p>If you are planning to build these skills through structured learning, explore <a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">TechPratham's Data Analytics training in India</a> and compare its practical tools, projects and support with your learning goals.</p>
+<p>For more hands-on guides, visit the <a href="../">Data Analytics Learning Roadmap homepage</a> or browse <a href="./">all Data Analytics blogs</a>.</p>
+</article></main><footer><p>Data Analytics Learning Roadmap</p></footer></body></html>
