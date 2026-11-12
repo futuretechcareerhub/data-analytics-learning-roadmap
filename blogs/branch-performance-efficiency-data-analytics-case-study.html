@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Are Some Business Branches More Efficient Than Others? A Data Analytics Case Study</title>
+<meta name="description" content="Explore how to compare business branch performance using Excel, SQL and Power BI, uncover operational gaps, measure efficiency and turn findings into practical recommendations.">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/branch-performance-efficiency-data-analytics-case-study.html">
+<meta name="robots" content="index,follow">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:#202124;font-family:Arial,sans-serif;line-height:1.75}
+.site-header{background:#111827;color:#fff;padding:18px 22px}.nav-wrap{max-width:1050px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{font-weight:700;color:#fff;text-decoration:none;font-size:18px}.site-header nav{display:flex;gap:10px;flex-wrap:wrap}.site-header nav a{color:#fff;text-decoration:none;padding:8px 13px;border:1px solid #4b5563;border-radius:6px}.site-header nav a:hover{background:#374151}
+main{max-width:960px;margin:38px auto;padding:0 20px}.article-shell{display:block;background:#fff;padding:42px 48px;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 4px 18px #1118270b}
+.article-shell>p:first-child{display:inline-block;margin:0 0 14px;padding:5px 12px;background:#eff6ff;color:#1d4ed8;border-radius:20px;font-size:14px;font-weight:700}
+h1{font-size:38px;line-height:1.2;color:#111827;margin:8px 0 24px;letter-spacing:-.6px}h2{font-size:25px;line-height:1.3;color:#111827;margin:38px 0 12px;padding-bottom:9px;border-bottom:2px solid #e5e7eb}h3{font-size:19px;color:#1f2937;margin:25px 0 8px}
+p{margin:13px 0}ul,ol{padding-left:25px}li{margin:8px 0}a{color:#2563eb}code{background:#f3f4f6;padding:2px 5px;border-radius:4px;font-size:.92em}
+pre{overflow-x:auto;background:#111827;color:#e5e7eb;padding:20px;border-radius:9px;line-height:1.6}pre code{background:transparent;padding:0;color:inherit}
+.callout{background:#eff6ff;border-left:4px solid #2563eb;padding:16px 18px;border-radius:7px;margin:22px 0}.course-cta{margin-top:42px;padding:28px;background:#111827;color:#fff;border-radius:12px}.course-cta .eyebrow{margin:0;color:#bfdbfe;font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:700}.course-cta h2{margin:8px 0;color:#fff;border:0;padding:0}.course-cta p{color:#e5e7eb}.cta-button{display:inline-block;margin-top:10px;padding:12px 18px;background:#2563eb;color:#fff;text-decoration:none;border-radius:7px;font-weight:700}.cta-button:hover{background:#1d4ed8}
+footer{text-align:center;padding:28px;color:#6b7280}
+@media(max-width:700px){main{margin:20px auto;padding:0 12px}.article-shell{padding:25px 20px}h1{font-size:30px}h2{font-size:22px}.brand{font-size:16px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="nav-wrap"><a class="brand" href="../">Data Analytics Learning Roadmap</a><nav aria-label="Main navigation"><a href="../">Home</a><a href="./">All Blogs</a></nav></div></header>
+<main><article class="article-shell">
+<p>Published: November 12, 2026</p>
+<h1>Why Are Some Business Branches More Efficient Than Others? A Data Analytics Case Study</h1>
+<p>A retail company has ten branches. Some generate strong revenue with relatively small teams, while others spend more on staffing and operations but produce lower sales. The leadership team wants to know which locations are performing efficiently—and what the stronger branches are doing differently.</p>
+<p>This is a useful business question for a data analyst because revenue alone does not tell the full story. To compare branches fairly, we need to examine sales, operating costs, staffing, customer activity and the context in which each branch works. In this case study, we will build a practical analysis using Excel, SQL and Power BI.</p>
+<div class="callout"><strong>Case study note:</strong> The scenario and sample figures in this article are illustrative. They show an analysis method, not actual company results.</div>
+<h2>Start with the right business question</h2>
+<p>Instead of asking only “Which branch has the highest sales?”, define a set of questions that helps explain performance:</p>
+<ul><li>Which branches generate the most revenue and gross profit?</li><li>How much revenue or profit does each branch generate relative to its operating cost?</li><li>Are staffing levels aligned with customer demand?</li><li>Do footfall, conversion rate and average transaction value differ by location?</li><li>Are differences explained by branch size, opening hours, local demand or product mix?</li></ul>
+<p>These questions separate scale from efficiency. A large branch may produce the highest total revenue simply because it serves a larger market. A smaller branch may use its resources more effectively even if its total sales are lower.</p>
+<h2>Step 1: Decide how branch efficiency will be measured</h2>
+<p>Before opening Excel, agree on metric definitions with the business team. A practical branch comparison may include:</p>
+<ul>
+<li><strong>Total revenue:</strong> value of completed sales during the selected period.</li>
+<li><strong>Gross profit:</strong> revenue minus the direct cost of goods sold.</li>
+<li><strong>Operating cost:</strong> agreed branch-level costs such as rent, utilities and local operating expenses.</li>
+<li><strong>Operating profit:</strong> gross profit minus the operating costs included in the analysis.</li>
+<li><strong>Revenue per employee:</strong> revenue divided by average employee count or full-time equivalent.</li>
+<li><strong>Conversion rate:</strong> completed transactions divided by measured store visits, where reliable footfall data exists.</li>
+<li><strong>Average transaction value:</strong> revenue divided by completed transactions.</li>
+</ul>
+<p>Do not combine metrics with different definitions or time periods. For example, monthly revenue should not be compared with a headcount figure captured only at year-end without noting the limitation. Also check whether central costs, online orders or shared staff are allocated consistently.</p>
+<h2>Step 2: Prepare a branch-level dataset in Excel</h2>
+<p>Imagine the company provides three files: monthly branch sales, operating expenses and employee information. A separate footfall file may be available for stores that use visitor counters.</p>
+<p>Start by checking that branch IDs match across all files. Standardise month formats, confirm currency and units, and look for missing periods. Check whether sales are recorded before or after returns and discounts. If a branch opened halfway through the year, mark its operating months rather than treating missing earlier months as zero performance.</p>
+<p>Use Excel tables and pivot tables to summarise revenue, costs and transactions by branch and month. A simple comparison table could include branch ID, region, sales, gross profit, operating cost, employee count and transactions. Add calculated metrics only after validating the source totals.</p>
+<h2>Step 3: Use SQL to combine and compare branch performance</h2>
+<p>SQL is useful when the source data sits in separate tables. The example below assumes monthly sales and monthly branch costs are stored at the same branch-and-month grain.</p>
+<h3>Summarise sales by branch and month</h3>
+<pre><code>SELECT
+  branch_id,
+  DATE_TRUNC('month', order_date) AS sales_month,
+  SUM(net_sales) AS revenue,
+  SUM(cost_of_goods_sold) AS cogs,
+  COUNT(DISTINCT order_id) AS transactions
+FROM sales
+WHERE order_status = 'Completed'
+GROUP BY
+  branch_id,
+  DATE_TRUNC('month', order_date);</code></pre>
+<p><code>DATE_TRUNC</code> is supported by several SQL databases, but date functions vary. Adapt the syntax to your database and define how returns, refunds and cancelled orders should be treated.</p>
+<h3>Calculate branch-level operating measures</h3>
+<pre><code>SELECT
+  s.branch_id,
+  SUM(s.revenue) AS total_revenue,
+  SUM(s.revenue - s.cogs) AS gross_profit,
+  SUM(c.operating_cost) AS operating_cost,
+  SUM(s.revenue - s.cogs) - SUM(c.operating_cost)
+    AS operating_profit,
+  SUM(s.transactions) AS total_transactions
+FROM monthly_branch_sales s
+JOIN monthly_branch_costs c
+  ON s.branch_id = c.branch_id
+ AND s.sales_month = c.cost_month
+GROUP BY s.branch_id;</code></pre>
+<p>This query assumes each source contains one row per branch per month. If either table has multiple rows at that grain, aggregate it first; otherwise the join can multiply values and inflate totals. Validate the result against the original reports before using it in a dashboard.</p>
+<h2>Step 4: Look beyond the ranking</h2>
+<p>Once the metrics are ready, identify branches that deserve a closer look. A high-revenue branch may also have high rent, staffing costs or unusually large footfall. A lower-revenue branch may have strong profit relative to its cost base. Compare similar branches where possible—for example, stores of similar size, in comparable locations and with similar opening hours.</p>
+<p>Use a few diagnostic comparisons:</p>
+<ul><li><strong>Revenue and profit together:</strong> find branches with high sales but weak profit.</li><li><strong>Cost per transaction:</strong> see whether operating expenses are high relative to customer activity.</li><li><strong>Revenue per employee:</strong> compare productivity while considering shift patterns and service requirements.</li><li><strong>Average transaction value:</strong> check whether product mix or basket size differs.</li><li><strong>Monthly trends:</strong> distinguish a persistent pattern from a seasonal or one-off change.</li></ul>
+<p>Be careful with conclusions. A lower conversion rate may reflect a different customer base, local competition, store layout or footfall measurement quality. The numbers point to questions to investigate; they do not automatically prove the reason behind a branch's performance.</p>
+<h2>Step 5: Build a Power BI branch comparison dashboard</h2>
+<p>A useful dashboard should let a regional manager compare branches and investigate the drivers behind the numbers. Consider organising it into three views:</p>
+<h3>Overview page</h3>
+<ul><li>KPI cards for revenue, gross profit, operating profit and operating cost.</li><li>A bar chart ranking branches by operating profit.</li><li>A scatter plot comparing revenue with operating cost, with one point per branch.</li><li>Filters for month, region and branch type.</li></ul>
+<h3>Efficiency page</h3>
+<ul><li>Revenue per employee and cost per transaction.</li><li>Average transaction value and conversion rate, where data is available.</li><li>A comparison table showing each metric beside its definition.</li></ul>
+<h3>Trend page</h3>
+<ul><li>Monthly revenue and profit trends by selected branch.</li><li>Month-over-month changes with seasonal context.</li><li>A way to compare a branch with a relevant peer group.</li></ul>
+<p>Keep the dashboard readable and avoid ranking branches on a single unexplained score. Add tooltips or notes for metric definitions, reporting periods and missing data. Test that totals remain correct when users apply filters.</p>
+<h2>Step 6: Turn findings into practical recommendations</h2>
+<p>Suppose the analysis shows that two branches have similar sales, but one has consistently higher operating costs per transaction. That is a signal to investigate scheduling, opening hours, rent, service demand and local operating conditions—not an automatic instruction to reduce staff.</p>
+<p>A sensible recommendation connects evidence to a testable action. For example, review staffing patterns against hourly footfall for a selected branch, trial a revised schedule during comparable weeks, and monitor service levels, sales and cost per transaction. If the data shows a product-mix difference, investigate availability and local demand before changing the range.</p>
+<p>For every recommendation, document the observation, possible explanation, additional evidence needed, proposed action, owner and success measure. This makes the analysis useful to decision-makers and keeps assumptions visible.</p>
+<h2>How to present this as a Data Analyst portfolio project</h2>
+<ol><li><strong>Project brief:</strong> describe the business question and why branch efficiency matters.</li><li><strong>Data dictionary:</strong> explain each field, source, grain and reporting period.</li><li><strong>Data preparation:</strong> document missing months, inconsistent branch IDs and treatment of returns.</li><li><strong>SQL work:</strong> include aggregation and join queries with validation checks.</li><li><strong>Excel analysis:</strong> show initial summaries and metric calculations.</li><li><strong>Power BI report:</strong> add screenshots of the overview, efficiency and trend pages.</li><li><strong>Business recommendations:</strong> explain what the findings suggest and what should be tested next.</li></ol>
+<p>Use synthetic or public data for a public portfolio. Do not share confidential branch costs, employee details or customer information. Make the assumptions clear so reviewers can understand how you reached your conclusions.</p>
+<h2>Skills to look for in Data Analytics training in India</h2>
+<p>A practical learning programme should help you connect data preparation, analysis and communication. Look for exercises that involve Excel summaries, SQL joins and aggregations, Power BI dashboards, metric selection and business case studies. It is equally important to practise explaining why a metric is suitable, what the data cannot tell you and how a recommendation could be measured.</p>
+<h2>Final takeaway</h2>
+<p>Comparing business branches is not just a ranking exercise. A useful analyst considers revenue, profit, operating costs, staffing and customer activity together, checks that the data is comparable, and investigates the context behind unusual results. Excel, SQL and Power BI each support a different part of that process.</p>
+<section class="course-cta"><p class="eyebrow">Build practical analytics skills</p><h2>Ready to work on real-world business problems?</h2><p>Explore a structured learning path covering Excel, SQL and Power BI, and compare the practical projects and learning support with your career goals.</p><a class="cta-button" href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">Explore Data Analytics Training in India</a></section>
+<p>For more practical learning guides, visit the <a href="../">Data Analytics Learning Roadmap homepage</a> or browse <a href="./">all Data Analytics blogs</a>.</p>
+</article></main><footer><p>Data Analytics Learning Roadmap</p></footer>
+</body></html>
