@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Marketing Campaign Actually Works? A Practical Campaign Performance Analysis Using Data</title>
+<meta name="description" content="Learn how to compare marketing campaigns using Excel, SQL and Power BI. Analyse clicks, leads, conversions, cost per lead and campaign ROI to make better decisions.">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/marketing-campaign-performance-analysis-excel-sql-power-bi.html">
+<meta name="robots" content="index,follow">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:#202124;font-family:Arial,sans-serif;line-height:1.75}
+.site-header{background:#111827;color:#fff;padding:18px 22px}.nav-wrap{max-width:1050px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{font-weight:700;color:#fff;text-decoration:none;font-size:18px}.site-header nav{display:flex;gap:10px;flex-wrap:wrap}.site-header nav a{color:#fff;text-decoration:none;padding:8px 13px;border:1px solid #4b5563;border-radius:6px}.site-header nav a:hover{background:#374151}
+main{max-width:960px;margin:38px auto;padding:0 20px}.article-shell{background:#fff;padding:42px 48px;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 4px 18px #1118270b}
+.article-shell>p:first-child{display:inline-block;margin:0 0 14px;padding:5px 12px;background:#eff6ff;color:#1d4ed8;border-radius:20px;font-size:14px;font-weight:700}
+h1{font-size:38px;line-height:1.2;color:#111827;margin:8px 0 24px;letter-spacing:-.6px}h2{font-size:25px;line-height:1.3;color:#111827;margin:38px 0 12px;padding-bottom:9px;border-bottom:2px solid #e5e7eb}h3{font-size:19px;color:#1f2937;margin:25px 0 8px}
+p{margin:13px 0}ul,ol{padding-left:25px}li{margin:8px 0}a{color:#2563eb}code{background:#f3f4f6;padding:2px 5px;border-radius:4px;font-size:.92em}
+pre{overflow-x:auto;background:#111827;color:#e5e7eb;padding:20px;border-radius:9px;line-height:1.6}pre code{background:transparent;padding:0;color:inherit}
+.callout{background:#eff6ff;border-left:4px solid #2563eb;padding:16px 18px;border-radius:7px;margin:22px 0}.course-cta{margin-top:42px;padding:28px;background:#111827;color:#fff;border-radius:12px}.course-cta .eyebrow{margin:0;color:#bfdbfe;font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:700}.course-cta h2{margin:8px 0;color:#fff;border:0;padding:0}.course-cta p{color:#e5e7eb}.cta-button{display:inline-block;margin-top:10px;padding:12px 18px;background:#2563eb;color:#fff;text-decoration:none;border-radius:7px;font-weight:700}.cta-button:hover{background:#1d4ed8}
+footer{text-align:center;padding:28px;color:#6b7280}
+@media(max-width:700px){main{margin:20px auto;padding:0 12px}.article-shell{padding:25px 20px}h1{font-size:30px}h2{font-size:22px}.brand{font-size:16px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="nav-wrap"><a class="brand" href="../">Data Analytics Learning Roadmap</a><nav aria-label="Main navigation"><a href="../">Home</a><a href="./">All Blogs</a></nav></div></header>
+<main><article class="article-shell">
+<p>Published: November 14, 2026</p>
+<h1>Which Marketing Campaign Actually Works? A Practical Campaign Performance Analysis Using Data</h1>
+<p>A marketing team is running search ads, social media promotions, email campaigns and referral offers. Each channel reports activity, but the team still has a difficult question: which campaigns are bringing useful leads and customers, rather than simply generating clicks?</p>
+<p>This practical case study follows an analyst who brings campaign data into one consistent view. Using Excel for initial checks, SQL for repeatable calculations and Power BI for reporting, we will compare the journey from click to lead to customer. The focus is on measurable conversion performance, transparent metric definitions and recommendations the marketing team can act on.</p>
+<div class="callout"><strong>Important:</strong> The campaign figures and business scenario in this guide are illustrative. Real campaign comparisons depend on reliable tracking, consistent attribution rules, comparable time windows and complete cost data.</div>
+<h2>Start with the business question—not the dashboard</h2>
+<p>“Which campaign is best?” is too broad to answer without defining success. A campaign may attract many clicks but few qualified leads. Another may generate fewer leads but convert a higher share into customers. The right choice depends on the business objective and the value of the outcomes.</p>
+<p>Agree on questions such as:</p>
+<ul><li>Which campaigns generate the most leads and completed purchases?</li><li>What percentage of clicks become leads, and what percentage of leads become customers?</li><li>How much does each campaign spend to acquire a lead or customer?</li><li>Are results different by channel, audience, device or landing page?</li><li>Are recent results stable, or are they based on a small sample?</li></ul>
+<h2>Step 1: Define campaign metrics consistently</h2>
+<p>Before comparing channels, document the meaning of every metric. Teams sometimes use “conversion” to mean a form submission, a qualified lead or a paid order. Mixing these definitions can make a report misleading.</p>
+<ul><li><strong>Click-through rate (CTR):</strong> clicks divided by impressions, multiplied by 100.</li><li><strong>Lead conversion rate:</strong> leads divided by clicks, multiplied by 100.</li><li><strong>Lead-to-customer rate:</strong> customers divided by leads, multiplied by 100.</li><li><strong>Cost per lead (CPL):</strong> campaign spend divided by leads.</li><li><strong>Customer acquisition cost (CAC):</strong> eligible acquisition spend divided by acquired customers, using an agreed cost scope.</li><li><strong>Return on ad spend (ROAS):</strong> attributed revenue divided by advertising spend.</li></ul>
+<p>CTR describes engagement, not business success by itself. CPL and CAC also need context: a low-cost lead may be less qualified, while a higher-cost lead may produce more customers. ROAS is not the same as profit because it does not automatically include product costs, fulfilment, salaries or other operating expenses.</p>
+<h2>Step 2: Prepare the campaign dataset in Excel</h2>
+<p>A useful campaign table may include campaign ID, campaign name, channel, reporting date, impressions, clicks, leads, qualified leads, customers, spend and attributed revenue. A separate campaign lookup table can store the channel, audience and campaign objective.</p>
+<p>In Excel, convert the source range into a table and check:</p>
+<ul><li>Campaign names and IDs are consistent across files.</li><li>Dates use the same time zone and reporting period.</li><li>Spend, clicks, leads and revenue are numeric and non-negative where expected.</li><li>Duplicate daily campaign rows are identified before aggregation.</li><li>Missing values are distinguished from genuine zero activity.</li><li>Currency and attribution windows are consistent across channels.</li></ul>
+<p>Create a PivotTable with campaign and channel as rows, and impressions, clicks, leads, customers, spend and revenue as values. Use calculated fields or adjacent formulas for rates and costs. Avoid averaging daily conversion rates when the correct overall rate should be calculated from total leads divided by total clicks.</p>
+<h2>Step 3: Calculate campaign performance with SQL</h2>
+<p>SQL makes campaign reporting repeatable and helps combine advertising data with lead and customer outcomes. The following example assumes a daily campaign summary table with one row per campaign per date. Adapt date functions and table names to your database.</p>
+<pre><code>SELECT
+  campaign_id,
+  campaign_name,
+  channel,
+  SUM(impressions) AS impressions,
+  SUM(clicks) AS clicks,
+  SUM(leads) AS leads,
+  SUM(customers) AS customers,
+  SUM(spend) AS spend,
+  SUM(attributed_revenue) AS revenue,
+  ROUND(100.0 * SUM(leads) / NULLIF(SUM(clicks), 0), 2)
+    AS lead_conversion_rate,
+  ROUND(SUM(spend) / NULLIF(SUM(leads), 0), 2)
+    AS cost_per_lead,
+  ROUND(SUM(spend) / NULLIF(SUM(customers), 0), 2)
+    AS customer_acquisition_cost,
+  ROUND(SUM(attributed_revenue) / NULLIF(SUM(spend), 0), 2)
+    AS return_on_ad_spend
+FROM campaign_daily
+GROUP BY campaign_id, campaign_name, channel
+ORDER BY cost_per_lead;</code></pre>
+<p><code>NULLIF</code> prevents division-by-zero errors. In a production report, define how to handle missing spend, refunds, delayed conversions and campaigns with no activity. Also ensure that the customer and revenue counts use the same attribution logic before comparing them.</p>
+<h2>Step 4: Investigate the full conversion funnel</h2>
+<p>Campaign results become more useful when the analyst looks beyond the final totals. Compare each stage of the funnel: impressions, clicks, leads, qualified leads and customers. A large drop between clicks and leads may point to a landing-page or audience mismatch. A drop between leads and customers may indicate lead quality, sales follow-up or offer-fit issues.</p>
+<p>Segment the results carefully:</p>
+<ul><li><strong>Channel:</strong> search, social, email, display or referral.</li><li><strong>Audience:</strong> new versus returning audiences, where tracking permits.</li><li><strong>Device:</strong> mobile, desktop and tablet.</li><li><strong>Landing page:</strong> compare pages only when traffic sources and objectives are reasonably comparable.</li><li><strong>Time:</strong> compare equivalent weekdays, campaign durations and conversion windows.</li></ul>
+<p>Do not assume that a difference proves the campaign caused the outcome. Seasonality, audience mix, brand familiarity, sales-team response times and attribution settings may all influence observed performance.</p>
+<h2>Step 5: Build a Power BI campaign dashboard</h2>
+<p>A Power BI report should help a marketing manager move from an overall summary to the reason behind a campaign's result. A practical layout can include:</p>
+<h3>Campaign overview</h3>
+<ul><li>KPI cards for spend, clicks, leads, customers and attributed revenue.</li><li>A campaign comparison table with lead conversion rate, CPL, CAC and ROAS.</li><li>A bar chart ranking campaigns by a selected outcome, such as qualified leads or customers.</li></ul>
+<h3>Funnel analysis</h3>
+<ul><li>A funnel visual showing clicks, leads, qualified leads and customers.</li><li>Conversion rates between each stage.</li><li>Filters for channel, campaign, date range, audience and device.</li></ul>
+<h3>Trend and efficiency</h3>
+<ul><li>A time-series chart for spend and customer conversions.</li><li>A scatter plot comparing campaign spend with acquired customers.</li><li>Tooltips that show sample size, reporting period and metric definitions.</li></ul>
+<p>Make the report clear about whether revenue is attributed, modelled or directly recorded. Show the selected date range and last refresh date so stakeholders know what they are viewing.</p>
+<h2>Step 6: Turn the comparison into a decision</h2>
+<p>Imagine two illustrative campaigns. Campaign A produces 500 leads from 10,000 clicks and spends ₹50,000. Campaign B produces 300 leads from 3,000 clicks and spends ₹45,000. Campaign A has a 5% click-to-lead rate and a ₹100 CPL. Campaign B has a 10% rate and a ₹150 CPL.</p>
+<p>It would be premature to declare either campaign the winner. The next questions are how many leads qualified, how many became customers, what revenue was attributed and whether the audience and campaign objectives were comparable. If Campaign B converts a much higher share of leads into customers, its higher CPL may still be justified.</p>
+<div class="callout"><strong>Decision principle:</strong> Compare campaigns against the same business outcome and full cost definition. Use conversion quality and customer economics—not clicks or CPL alone—to guide budget decisions.</div>
+<p>Recommendations may include testing a new landing-page message, improving lead qualification, adjusting audience targeting, checking sales follow-up speed or reallocating a limited test budget. Make the next action measurable and set a review date rather than presenting a dashboard as the decision itself.</p>
+<h2>Step 7: Check data quality and avoid misleading conclusions</h2>
+<ul><li>Confirm that clicks, leads and customers are not double-counted across platforms.</li><li>Check that attribution windows and conversion definitions are documented.</li><li>Separate campaign spend from total marketing or agency costs.</li><li>Allow enough time for delayed conversions to be recorded.</li><li>Review sample sizes and avoid overreacting to small daily changes.</li><li>Where possible, use controlled experiments or holdout groups to test causal impact.</li></ul>
+<p>If two campaigns target different audiences or objectives, present them as different use cases rather than forcing a single league table. Explain uncertainty and data limitations alongside the recommendation.</p>
+<h2>Present this analysis as a Data Analyst portfolio project</h2>
+<ol><li><strong>Business brief:</strong> describe the marketing team's decision and the campaign objectives.</li><li><strong>Data dictionary:</strong> define each field, metric, reporting period and attribution rule.</li><li><strong>Excel workbook:</strong> include data checks, PivotTables and clearly labelled calculations.</li><li><strong>SQL analysis:</strong> show aggregation logic, conversion metrics and safe division.</li><li><strong>Power BI report:</strong> present campaign comparisons, funnel performance and trends.</li><li><strong>Business recommendation:</strong> explain what to test, what to monitor and what evidence would change the decision.</li></ol>
+<p>Use synthetic or public data in a public portfolio. Do not publish private customer details, advertising account identifiers, confidential budgets or proprietary campaign results. Include a README explaining assumptions so another person can reproduce the analysis.</p>
+<h2>Skills to build through Data Analytics training in India</h2>
+<p>Look for practical learning that connects Excel data preparation, SQL aggregation, Power BI reporting and business interpretation. A useful project should teach you to define metrics, validate source data, analyse conversion funnels, explain limitations and communicate recommendations to stakeholders—not just create charts.</p>
+<h2>Final takeaway</h2>
+<p>The campaign with the most clicks is not necessarily the campaign that creates the most customers. A reliable comparison starts with clear definitions, checks the data, follows the full conversion funnel and connects spend to customer outcomes. Excel helps explore the data, SQL makes calculations repeatable and Power BI makes the evidence easier to discuss. The final recommendation should be a testable business action backed by transparent assumptions.</p>
+<section class="course-cta"><p class="eyebrow">Build practical analytics skills</p><h2>Ready to analyse real-world business problems?</h2><p>Explore a structured learning path covering Excel, SQL and Power BI, and compare the practical projects and learning support with your career goals.</p><a class="cta-button" href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">Explore Data Analytics Training in India</a></section>
+<p>For more practical learning guides, visit the <a href="../">Data Analytics Learning Roadmap homepage</a> or browse <a href="./">all Data Analytics blogs</a>.</p>
+</article></main><footer><p>Data Analytics Learning Roadmap</p></footer>
+</body></html>
