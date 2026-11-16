@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Are Customers Clicking but Not Buying? A Data Analytics Investigation of the Conversion Gap</title>
+<meta name="description" content="Explore how analysts investigate website conversion gaps using Excel, SQL funnel analysis and Power BI to find where visitors drop off and recommend improvements.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/website-conversion-gap-analysis-excel-sql-power-bi.html">
+<style>
+:root{--navy:#101b35;--blue:#315ee8;--ink:#20283a;--muted:#647087;--line:#e5eaf2;--bg:#f3f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 Inter,Arial,sans-serif}
+.site-header{background:linear-gradient(120deg,#101b35,#1b3159);color:#fff;padding:20px 24px}
+.nav{max-width:1080px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-weight:800;letter-spacing:.2px;color:#fff;text-decoration:none;font-size:18px}
+.nav-links{display:flex;gap:20px;flex-wrap:wrap}.nav-links a{color:#dce6ff;text-decoration:none;font-size:14px;font-weight:600}
+.hero{max-width:900px;margin:0 auto;padding:62px 22px 50px;color:#fff}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:1.8px;color:#b9cbff;font-weight:800}
+.hero h1{font-size:clamp(32px,5vw,48px);line-height:1.18;margin:14px 0 18px;letter-spacing:-1.2px}
+.hero p{max-width:760px;color:#dce5f8;font-size:18px;margin:0}
+.meta{margin-top:24px;color:#c1cde3;font-size:14px}
+.wrap{max-width:900px;margin:-8px auto 60px;padding:0 20px}
+.article-card{background:#fff;border:1px solid #e8edf5;border-radius:18px;padding:clamp(24px,5vw,54px);box-shadow:0 18px 50px rgba(25,42,75,.08)}
+.article-card h2{font-size:27px;line-height:1.3;color:var(--navy);margin:42px 0 12px}
+.article-card h3{font-size:20px;color:#24385f;margin:26px 0 8px}
+.article-card p{margin:12px 0}.article-card li{margin:8px 0}
+.article-card a{color:#2454d7;font-weight:650}
+.callout{background:#f0f5ff;border-left:4px solid var(--blue);padding:18px 20px;border-radius:10px;margin:24px 0}
+.table-wrap{overflow-x:auto;margin:20px 0}table{width:100%;border-collapse:collapse;min-width:560px;font-size:14px}th,td{padding:12px 14px;border:1px solid var(--line);text-align:left}th{background:#f3f6fc;color:#20345e}
+pre{background:#111b2e;color:#e7efff;padding:20px;border-radius:12px;overflow-x:auto;font-size:13px;line-height:1.65}code{font-family:Consolas,monospace}
+.steps{padding-left:22px}.cta{margin-top:48px;background:linear-gradient(130deg,#101b35,#243f70);color:#fff;border-radius:16px;padding:30px}
+.cta h2{color:#fff;margin:0 0 10px;font-size:25px}.cta p{color:#e0e9fa}.cta a{display:inline-block;margin-top:10px;background:#fff;color:#17356f;text-decoration:none;padding:12px 19px;border-radius:8px;font-weight:800}
+footer{text-align:center;color:#718096;padding:26px 16px;font-size:14px}
+@media(max-width:600px){.site-header{padding:16px}.hero{padding:44px 22px}.nav{align-items:flex-start}.nav-links{gap:14px}.article-card{padding:23px 19px}.article-card h2{font-size:23px}}
+</style>
+</head>
+<body>
+<header class="site-header"><nav class="nav"><a class="brand" href="../">Data Analytics Learning Roadmap</a><div class="nav-links"><a href="../">Home</a><a href="index.html">All Blogs</a></div></nav>
+<div class="hero"><div class="eyebrow">Practical analytics case study</div><h1>Why Are Customers Clicking but Not Buying? A Data Analytics Investigation of the Conversion Gap</h1><p>A website can attract plenty of visitors and still generate very few orders. Learn how a data analyst traces the conversion journey, finds the biggest drop-off and turns evidence into practical improvements.</p><div class="meta">Published: November 16, 2026 &nbsp; • &nbsp; 9–11 min read</div></div></header>
+<main class="wrap"><article class="article-card">
+<p>Imagine an online store receiving 20,000 visits in a month. Product pages are being viewed, advertisements are getting clicks and visitors are adding items to their carts. Yet completed purchases remain lower than the business expected. The immediate assumption might be that the website needs more traffic, but the real issue could be hiding inside the customer journey.</p>
+<p>This is a useful business problem for anyone learning <strong>Data Analytics training in India</strong>: instead of guessing why sales are weak, an analyst uses event data to identify where visitors leave and which parts of the journey need attention.</p>
+<div class="callout"><strong>Case-study question:</strong> At which stage do visitors drop out of the purchase journey, and what evidence can help the business improve conversion?</div>
+
+<h2>1. Understand the conversion funnel</h2>
+<p>A conversion funnel breaks a broad customer journey into measurable steps. For an e-commerce website, a simple funnel could look like this:</p>
+<ol class="steps"><li><strong>Visit:</strong> a user lands on the website.</li><li><strong>Product view:</strong> the user opens a product page.</li><li><strong>Add to cart:</strong> the user expresses purchase intent.</li><li><strong>Begin checkout:</strong> the user starts entering delivery or payment details.</li><li><strong>Purchase:</strong> the order is successfully completed.</li></ol>
+<p>Each stage should have a clear event definition. For example, count unique visitors rather than raw page views when measuring how many people reached a stage. Also decide how the analysis handles repeat sessions, logged-out users and visitors who return later.</p>
+
+<h2>2. Prepare the data in Excel</h2>
+<p>Start with an event-level dataset. Each row may represent an action performed by a visitor. Useful fields include visitor ID, session ID, event name, event timestamp, device type, traffic source, landing page and order ID.</p>
+<div class="table-wrap"><table><thead><tr><th>Visitor ID</th><th>Session</th><th>Event</th><th>Device</th><th>Source</th></tr></thead><tbody>
+<tr><td>V101</td><td>S501</td><td>product_view</td><td>Mobile</td><td>Organic</td></tr>
+<tr><td>V101</td><td>S501</td><td>add_to_cart</td><td>Mobile</td><td>Organic</td></tr>
+<tr><td>V101</td><td>S501</td><td>begin_checkout</td><td>Mobile</td><td>Organic</td></tr>
+<tr><td>V102</td><td>S502</td><td>product_view</td><td>Desktop</td><td>Paid Search</td></tr>
+<tr><td>V103</td><td>S503</td><td>purchase</td><td>Mobile</td><td>Email</td></tr>
+</tbody></table></div>
+<p>In Excel, check for blank visitor IDs, duplicate event records, inconsistent event names, invalid timestamps and missing device or source values. Standardise labels such as “mobile”, “Mobile” and “MOBILE” so they are not treated as separate categories.</p>
+<p>Use PivotTables to count distinct visitors at each stage where supported, or create a deduplicated visitor-stage table first. A basic stage conversion rate is:</p>
+<pre><code>Stage Conversion Rate = Visitors Reaching Next Stage
+                        / Visitors Reaching Current Stage
+
+Stage Drop-off Rate = 1 - Stage Conversion Rate</code></pre>
+<p>Keep the denominator visible in every report. A percentage without its underlying visitor count can be misleading, especially for small segments.</p>
+
+<h2>3. Use SQL to measure funnel movement</h2>
+<p>SQL helps transform event records into a consistent funnel summary. The following example assumes the table contains one row per recorded event and that the analysis window has already been selected.</p>
+<pre><code>WITH visitor_stages AS (
+  SELECT
+    visitor_id,
+    MAX(CASE WHEN event_name = 'product_view' THEN 1 ELSE 0 END) AS viewed,
+    MAX(CASE WHEN event_name = 'add_to_cart' THEN 1 ELSE 0 END) AS carted,
+    MAX(CASE WHEN event_name = 'begin_checkout' THEN 1 ELSE 0 END) AS checked_out,
+    MAX(CASE WHEN event_name = 'purchase' THEN 1 ELSE 0 END) AS purchased
+  FROM website_events
+  GROUP BY visitor_id
+)
+SELECT
+  SUM(viewed) AS product_viewers,
+  SUM(carted) AS cart_visitors,
+  SUM(checked_out) AS checkout_visitors,
+  SUM(purchased) AS purchasers,
+  ROUND(100.0 * SUM(carted) / NULLIF(SUM(viewed), 0), 2) AS view_to_cart_pct,
+  ROUND(100.0 * SUM(checked_out) / NULLIF(SUM(carted), 0), 2) AS cart_to_checkout_pct,
+  ROUND(100.0 * SUM(purchased) / NULLIF(SUM(checked_out), 0), 2) AS checkout_to_purchase_pct
+FROM visitor_stages;</code></pre>
+<p>This is a simplified visitor-level funnel. In a production analysis, define a session or conversion window, ensure events occur in the correct order, handle multiple purchases and decide how to attribute visitors who use multiple devices. Otherwise, a visitor who purchased before viewing a product in the selected period could distort the result.</p>
+
+<h2>4. Find the segment with the largest conversion gap</h2>
+<p>An overall conversion rate tells only part of the story. Break the funnel down by dimensions that may explain different experiences:</p>
+<ul><li><strong>Device:</strong> mobile, desktop and tablet.</li><li><strong>Traffic source:</strong> organic search, paid search, social, referral and email.</li><li><strong>Landing page:</strong> campaign pages, category pages and product pages.</li><li><strong>New versus returning visitors:</strong> compare journey patterns for each group.</li><li><strong>Geography or browser:</strong> check only when the data is reliable and privacy rules permit it.</li></ul>
+<p>For example, suppose mobile visitors add products to their carts at a healthy rate but rarely complete checkout, while desktop visitors complete purchases more often. That pattern suggests a checkout experience worth investigating on mobile. It does not prove the mobile layout is the cause; payment errors, shipping costs, page speed and audience differences are alternative explanations to test.</p>
+
+<h2>5. Build a Power BI conversion dashboard</h2>
+<p>Power BI can bring the funnel and its segments into one interactive view. A useful report can include:</p>
+<ul><li>KPI cards for unique visitors, cart visitors, purchasers and overall conversion rate.</li><li>A funnel visual showing visitor counts at each stage.</li><li>A bar chart comparing conversion rates by device and traffic source.</li><li>A trend chart showing conversion rate by day or week.</li><li>A detail table showing landing page, visitors, purchases and conversion rate.</li><li>Slicers for date range, device, source and new or returning visitor type.</li></ul>
+<p>Keep the dashboard focused on decisions. Label each metric, show the reporting period, display sample sizes and make it easy to compare segments. Avoid mixing session-based and visitor-based metrics in the same visual without clearly explaining the difference.</p>
+
+<h2>6. Turn findings into testable recommendations</h2>
+<p>Analytics should lead to a question or action, not just a chart. If the largest drop occurs between checkout start and purchase, the team can investigate:</p>
+<ul><li>Whether unexpected delivery fees appear late in checkout.</li><li>Whether the payment step has errors or limited payment choices.</li><li>Whether forms are difficult to complete on smaller screens.</li><li>Whether account creation is required before purchase.</li><li>Whether page speed or technical failures affect particular devices.</li></ul>
+<p>Prioritise recommendations by expected impact, confidence in the evidence and implementation effort. Where possible, run an A/B test with a defined success metric and guardrail metrics such as refunds, average order value and payment failure rate. Compare results over an appropriate period and avoid declaring a winner from a very small sample.</p>
+
+<h2>7. What skills does this project demonstrate?</h2>
+<p>A well-documented conversion-gap project can demonstrate several practical analytics skills:</p>
+<ul><li>Excel data cleaning, validation and PivotTable analysis.</li><li>SQL aggregation, conditional logic, grouping and rate calculations.</li><li>Power BI data modelling, measures, filters and dashboard design.</li><li>Funnel analysis, segmentation and metric definition.</li><li>Business communication: explaining what the data shows, what remains uncertain and what should be tested next.</li></ul>
+<p>For a portfolio, include the business question, dataset description, cleaning decisions, SQL queries, dashboard screenshots, key findings and recommended experiments. Clearly label any sample or simulated data; never present invented results as actual company performance.</p>
+
+<h2>Conclusion</h2>
+<p>When customers click but do not buy, the answer is rarely found by looking at traffic totals alone. A structured funnel analysis helps reveal where the journey weakens, while segmentation provides clues about which users or experiences need investigation. Excel, SQL and Power BI work together to turn raw website events into a clear, testable business story.</p>
+<p>Practising projects like this helps learners connect technical tools with real business questions—the kind of problem-solving expected in practical analytics work.</p>
+
+<section class="cta"><h2>Build Practical Data Analytics Skills</h2><p>Want to strengthen your Excel, SQL, Power BI and real-world problem-solving skills? Explore the course details and learning approach here.</p><a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener noreferrer">Explore Data Analytics Training in India</a></section>
+</article></main>
+<footer>© 2026 Data Analytics Learning Roadmap · <a href="../">Home</a> · <a href="index.html">All Blogs</a></footer>
+</body></html>
