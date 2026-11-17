@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Are Customers Returning Their Orders? A Data Analytics Investigation of Product Returns | Data Analytics Learning Roadmap</title>
+<meta name="description" content="Explore how to investigate product returns using Excel data cleaning, SQL return-rate analysis and Power BI dashboards to uncover patterns and reduce avoidable returns.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/product-returns-analysis-excel-sql-power-bi.html">
+<style>
+:root{--navy:#101c35;--blue:#2563eb;--ink:#243047;--muted:#64748b;--line:#e5eaf1;--bg:#f3f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 Arial,Helvetica,sans-serif}
+.site-header{background:linear-gradient(120deg,#101c35,#1c3764);color:#fff;padding:22px 5%;box-shadow:0 5px 20px #0f172a20}
+.nav{max-width:1080px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.brand{font-weight:700;letter-spacing:.2px;color:#fff;text-decoration:none}.nav-links{display:flex;gap:20px;flex-wrap:wrap}.nav-links a{color:#dbeafe;text-decoration:none;font-size:14px}.nav-links a:hover{color:#fff;text-decoration:underline}
+.hero{max-width:900px;margin:44px auto 22px;padding:0 22px}.eyebrow{color:#2563eb;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.18;letter-spacing:-1.2px;color:#111c32;margin:10px 0 15px}.hero p{font-size:18px;color:#526078;margin:0}.meta{margin-top:16px;color:#718096;font-size:13px}
+.article-wrap{max-width:900px;margin:0 auto 55px;padding:0 22px}.article{background:#fff;border:1px solid #e7ecf3;border-radius:18px;padding:clamp(24px,5vw,54px);box-shadow:0 14px 38px #14213b0c}
+h2{font-size:27px;line-height:1.3;color:#14213b;margin:38px 0 12px}h3{font-size:20px;color:#1c3156;margin:25px 0 8px}p{margin:12px 0}ul,ol{padding-left:24px}li{margin:7px 0}.callout{background:#eff6ff;border-left:4px solid var(--blue);padding:17px 20px;border-radius:8px;margin:22px 0}.table-wrap{overflow-x:auto;margin:20px 0}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:12px;text-align:left;border:1px solid var(--line)}th{background:#f1f5fb;color:#172746}pre{overflow-x:auto;background:#101c35;color:#e5edff;padding:20px;border-radius:12px;font-size:13px;line-height:1.65}code{font-family:Consolas,monospace}.muted{color:var(--muted)}.cta{margin-top:42px;background:linear-gradient(120deg,#101c35,#1c3764);color:#fff;padding:30px;border-radius:14px}.cta h2{color:#fff;margin:0 0 10px}.cta p{color:#dce6f8}.cta a{display:inline-block;margin-top:10px;background:#fff;color:#17366b;padding:12px 19px;border-radius:8px;text-decoration:none;font-weight:700}.footer{text-align:center;padding:25px;color:#738096;font-size:13px}.footer a{color:#315b9c;text-decoration:none}
+@media(max-width:600px){.site-header{padding:18px}.nav-links{gap:13px}.hero{margin-top:30px}.article{border-radius:12px}.hero p{font-size:16px}h2{font-size:23px}}
+</style>
+</head>
+<body>
+<header class="site-header"><nav class="nav"><a class="brand" href="../">Data Analytics Learning Roadmap</a><div class="nav-links"><a href="../">Home</a><a href="index.html">All Blogs</a></div></nav></header>
+<section class="hero"><div class="eyebrow">Practical Data Analytics Case Study</div><h1>Why Are Customers Returning Their Orders? A Data Analytics Investigation of Product Returns</h1><p>A step-by-step investigation of return patterns—from messy order records to useful business decisions—with Excel, SQL and Power BI.</p><div class="meta">Published: November 17, 2026 · Reading time: 8–10 minutes</div></section>
+<main class="article-wrap"><article class="article">
+<p>Product returns can quietly reduce a retailer’s margins. A business may report healthy order volumes while refunds, reverse-logistics costs and replacement shipments eat into the value of those sales. The important question is not simply how many orders came back, but <strong>which products are returned, why customers return them, and what patterns can the business act on?</strong></p>
+<p>In this practical case study, imagine an online retailer that wants to understand a rise in product returns. We will follow an analyst’s workflow: define useful measures, prepare the data in Excel, investigate return patterns with SQL, and present the findings in Power BI.</p>
+<div class="callout"><strong>Business question:</strong> Which products and categories have unusually high return rates, what reasons are most common, and what operational changes could reduce avoidable returns?</div>
+<h2>1. Understand the data before calculating anything</h2>
+<p>Start with two related datasets: an orders table and a returns table. The orders table records completed purchases; the returns table records returned quantities, dates and customer-reported reasons.</p>
+<div class="table-wrap"><table><thead><tr><th>Orders fields</th><th>Returns fields</th></tr></thead><tbody><tr><td>Order ID, Order Date, Product ID</td><td>Return ID, Order ID, Product ID</td></tr><tr><td>Category, Quantity, Unit Price</td><td>Returned Quantity, Return Date</td></tr><tr><td>Region, Customer ID, Sales Channel</td><td>Return Reason, Refund Amount</td></tr></tbody></table></div>
+<p>Check the grain of each table. One order can contain several products, and a product line may be returned in more than one event. If you join tables without understanding this relationship, you may multiply order quantities and overstate returns.</p>
+<h2>2. Clean and validate records in Excel</h2>
+<p>Before analysis, create a working copy and standardise the fields. Useful checks include:</p>
+<ul><li>Remove exact duplicate return records using a stable Return ID.</li><li>Trim extra spaces and standardise category and reason labels.</li><li>Check blank Order IDs, Product IDs, dates and returned quantities.</li><li>Flag returned quantities that are zero, negative or greater than the purchased quantity.</li><li>Confirm that every return record matches a valid order line.</li><li>Check that refund amounts are numeric and consistent with the business rules.</li></ul>
+<p>For a simple row-level validation, use Excel formulas such as:</p>
+<pre><code>=IF(OR([@[Returned Quantity]]&lt;=0,[@[Returned Quantity]]&gt;[@[Ordered Quantity]]),"Review","Valid")
+=TRIM(CLEAN([@[Return Reason]]))</code></pre>
+<p>Do not automatically delete unusual records. A return quantity greater than the order quantity may be an error, but it could also reveal a split-order or data-model issue. Flag it, investigate it and document the resolution.</p>
+<h2>3. Calculate meaningful return metrics</h2>
+<p>A return count alone can be misleading. A product with 50 returns from 10,000 units sold may be healthier than one with 12 returns from 40 units sold. Use a denominator that matches the business question.</p>
+<div class="callout"><strong>Unit return rate</strong> = Total returned units ÷ Total units sold × 100<br><strong>Order return rate</strong> = Orders with at least one return ÷ Total eligible orders × 100</div>
+<p>Keep unit return rate and order return rate separate. They answer different questions. Also define the eligible sales period and allow enough time for customers to return recent purchases; otherwise, the newest orders may appear artificially healthy.</p>
+<h2>4. Use SQL to find products and categories that need attention</h2>
+<p>After validating the data, use SQL to aggregate sold and returned quantities at the product level. The following example assumes each table has one row per product order line and that return rows are already deduplicated.</p>
+<pre><code>WITH sales AS (
+    SELECT
+        product_id,
+        product_name,
+        category,
+        SUM(quantity) AS units_sold
+    FROM order_lines
+    WHERE order_status = 'Completed'
+    GROUP BY product_id, product_name, category
+),
+returns AS (
+    SELECT
+        product_id,
+        SUM(returned_quantity) AS units_returned
+    FROM return_lines
+    GROUP BY product_id
+)
+SELECT
+    s.product_id,
+    s.product_name,
+    s.category,
+    s.units_sold,
+    COALESCE(r.units_returned, 0) AS units_returned,
+    ROUND(
+        100.0 * COALESCE(r.units_returned, 0)
+        / NULLIF(s.units_sold, 0), 2
+    ) AS unit_return_rate_pct
+FROM sales s
+LEFT JOIN returns r
+    ON s.product_id = r.product_id
+ORDER BY unit_return_rate_pct DESC;</code></pre>
+<p>For a fair comparison, filter both datasets to the same sales cohort and return window. In a production model, also join on the appropriate order-line key—not just Product ID—when returns need to be matched to individual purchases.</p>
+<h2>5. Investigate return reasons, customer segments and categories</h2>
+<p>Once high-return products are identified, look for patterns rather than assuming the product itself is always the problem. Break the results down by:</p>
+<ul><li><strong>Return reason:</strong> damaged, wrong item, size or fit, not as described, changed mind.</li><li><strong>Product category:</strong> compare categories using rates as well as counts.</li><li><strong>Supplier or brand:</strong> check whether issues cluster around a particular source.</li><li><strong>Region and fulfilment centre:</strong> look for shipping or handling patterns.</li><li><strong>Sales channel and customer segment:</strong> compare like-for-like groups without treating correlation as proof of cause.</li></ul>
+<p>For example, a high “not as described” rate may justify reviewing product images and descriptions. A concentration of “damaged” returns from one fulfilment centre may warrant a packaging or handling audit. These are hypotheses to validate with operational evidence—not conclusions to make from a chart alone.</p>
+<h2>6. Build a Power BI product returns dashboard</h2>
+<p>Bring the cleaned order and return tables into Power BI, establish the correct relationships, and create measures for units sold, units returned, unit return rate, returned order count and refund value. Use a consistent date table so that users can compare periods accurately.</p>
+<div class="table-wrap"><table><thead><tr><th>Dashboard visual</th><th>What it helps answer</th></tr></thead><tbody><tr><td>KPI cards</td><td>Are return rate and refund value moving up or down?</td></tr><tr><td>Bar chart by category</td><td>Which categories have the highest return rates?</td></tr><tr><td>Product ranking table</td><td>Which products combine high return rates with meaningful volume?</td></tr><tr><td>Reason breakdown</td><td>What reasons are customers selecting most often?</td></tr><tr><td>Trend line by month</td><td>When did the return pattern begin to change?</td></tr><tr><td>Region or fulfilment matrix</td><td>Are returns concentrated in specific operational areas?</td></tr></tbody></table></div>
+<p>Add slicers for date, category, region, supplier and channel. Show both the return rate and the number of units sold so viewers do not mistake a tiny sample for a major business issue. Include definitions in a tooltip or information panel.</p>
+<h2>7. Turn findings into practical business actions</h2>
+<p>A useful analysis ends with actions that can be tested and measured. Match each validated pattern to a responsible team and a follow-up metric.</p>
+<ul><li><strong>Product information:</strong> improve size guides, specifications, photos or compatibility details when “not as described” is a leading reason.</li><li><strong>Quality control:</strong> review supplier batches and inspection records when defects cluster around particular products.</li><li><strong>Packaging and delivery:</strong> test stronger packaging or handling changes when damage-related returns are concentrated in a route or warehouse.</li><li><strong>Customer experience:</strong> clarify product selection guidance when customers repeatedly choose the wrong variant.</li><li><strong>Monitoring:</strong> track return rates by product cohort after each change and compare with a suitable baseline.</li></ul>
+<div class="callout"><strong>Analyst’s takeaway:</strong> Prioritise products with a high return rate, enough sales volume to make the signal meaningful, and a reason pattern that the business can investigate. A ranked list without context is not yet a recommendation.</div>
+<h2>8. What should you include in a portfolio case study?</h2>
+<p>To make this project useful in a portfolio, document the original business question, data dictionary, cleaning decisions, validation checks, SQL queries, metric definitions, dashboard screenshots and recommendations. Explain one finding clearly and show how you would measure whether the proposed action worked.</p>
+<p>This workflow also demonstrates the practical skills expected in <strong>Data Analytics training in India</strong>: working with imperfect data, writing queries, interpreting metrics, building dashboards and communicating business recommendations. The tools matter, but the reasoning behind each step matters just as much.</p>
+<section class="cta"><h2>Build Practical Data Analytics Skills</h2><p>Want to strengthen your Excel, SQL and Power BI skills through structured learning and practical work? Explore the course details and learning approach.</p><a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener noreferrer">Explore Data Analytics Training in India</a></section>
+</article></main>
+<footer class="footer"><a href="../">Home</a> · <a href="index.html">All Blogs</a><p>Data Analytics Learning Roadmap</p></footer>
+</body></html>
