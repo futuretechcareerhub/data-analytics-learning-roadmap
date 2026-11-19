@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Are Some Customers Spending Less Over Time? A Data Analytics Investigation of Customer Spending Trends</title>
+<meta name="description" content="Investigate declining customer spending with Excel, SQL and Power BI. Learn to clean transaction data, analyze monthly spending trends, segment customers and recommend practical actions.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/customer-spending-decline-trends-data-analytics.html">
+<style>
+:root{--navy:#101c35;--blue:#2563eb;--ink:#243047;--muted:#667085;--bg:#f4f7fb;--border:#e5eaf2}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+header{background:var(--navy);color:#fff;padding:18px 20px}nav{max-width:1080px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}nav a{color:#e7eefc;text-decoration:none;font-weight:600}.brand{font-weight:800;letter-spacing:.2px}
+.hero{max-width:980px;margin:40px auto 0;padding:0 20px}.eyebrow{color:var(--blue);font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:.82rem}.hero h1{font-size:clamp(2rem,4vw,3rem);line-height:1.2;color:var(--navy);margin:12px 0}.hero p{font-size:1.12rem;color:var(--muted)}
+main{max-width:980px;margin:26px auto;padding:0 20px 50px}.article{background:#fff;border:1px solid var(--border);border-radius:18px;padding:clamp(22px,4vw,46px);box-shadow:0 10px 28px rgba(16,28,53,.06)}
+h2{margin-top:35px;color:var(--navy);font-size:1.6rem;line-height:1.3}h3{color:#1e3558;margin-top:24px}p{margin:14px 0}ul,ol{padding-left:24px}.callout{background:#eff6ff;border-left:4px solid var(--blue);padding:16px 18px;border-radius:8px;margin:20px 0}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{padding:12px;border:1px solid var(--border);text-align:left}th{background:#f1f5f9}
+pre{overflow:auto;background:#111827;color:#e5e7eb;padding:18px;border-radius:10px;line-height:1.55}code{font-family:Consolas,monospace}.cta{margin-top:38px;background:var(--navy);color:#fff;padding:28px;border-radius:14px}.cta h2{color:#fff;margin-top:0}.cta a{display:inline-block;margin-top:8px;background:#fff;color:var(--navy);font-weight:800;text-decoration:none;padding:12px 18px;border-radius:8px}.footer-links{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:25px}.footer-links a{color:var(--blue);font-weight:700}
+@media(max-width:650px){header{padding:16px}.hero{margin-top:28px}.article{padding:22px 18px}nav{justify-content:center}}
+</style></head>
+<body>
+<header><nav><a class="brand" href="../">Data Analytics Learning Roadmap</a><span><a href="../">Home</a> &nbsp;·&nbsp; <a href="./">All Blogs</a></span></nav></header>
+<section class="hero"><span class="eyebrow">Practical Business Case Study</span><h1>Why Are Some Customers Spending Less Over Time? A Data Analytics Investigation of Customer Spending Trends</h1><p>Customer spending can decline long before a business notices a revenue problem. This case study shows how an analyst investigates the trend, tests explanations and turns the findings into next steps using Excel, SQL and Power BI.</p></section>
+<main><article class="article">
+<p>Imagine an online retailer whose customer count appears stable, but average monthly revenue per customer is falling. The team sees orders coming in, yet customers are spending less than they did a few months ago. The goal is not to guess why: it is to measure the change, locate the segments driving it and investigate the possible causes.</p>
+<div class="callout"><strong>Business question:</strong> Which customer groups are spending less over time, what patterns explain the decline, and what actions could help increase customer value without relying on blanket discounts?</div>
+<h2>1. Define the Metrics Before Analyzing</h2>
+<p>Use a consistent time period and customer definition. A useful starting set of measures includes:</p>
+<ul><li><strong>Monthly spend per active customer:</strong> monthly sales divided by customers who purchased that month.</li><li><strong>Average order value (AOV):</strong> revenue divided by orders.</li><li><strong>Purchase frequency:</strong> orders per customer in a selected period.</li><li><strong>Repeat-purchase rate:</strong> share of customers who make another purchase within the chosen window.</li><li><strong>Customer spend change:</strong> compare a customer's recent period with an earlier baseline.</li></ul>
+<p>Keep refunds, discounts, taxes and cancelled orders consistently defined. If the business measures net revenue, use the same treatment for every comparison.</p>
+<h2>2. Prepare and Validate Transaction Data in Excel</h2>
+<p>Start with fields such as Order ID, Customer ID, Order Date, Product Category, Quantity, Unit Price, Discount, Net Sales and Order Status. Check the source before making charts.</p>
+<ul><li>Remove duplicate order-line records only after confirming the key.</li><li>Check blank or malformed customer IDs and dates.</li><li>Verify quantity, price and discount ranges.</li><li>Exclude cancelled orders and account for returns using the agreed net-sales definition.</li><li>Standardize category labels and date formats.</li></ul>
+<p>Use filters, conditional formatting, pivot tables and formula checks to compare totals against the source system. Document any excluded rows rather than silently deleting them.</p>
+<h2>3. Use SQL to Track Monthly Spending</h2>
+<p>Once data is validated and loaded into a database, aggregate transactions by month and customer. The following example uses a simplified orders table and PostgreSQL-style date functions.</p>
+<pre><code>SELECT
+  DATE_TRUNC('month', order_date) AS month,
+  COUNT(DISTINCT customer_id) AS active_customers,
+  COUNT(DISTINCT order_id) AS orders,
+  SUM(net_sales) AS net_revenue,
+  SUM(net_sales) / NULLIF(COUNT(DISTINCT customer_id), 0)
+    AS spend_per_active_customer,
+  SUM(net_sales) / NULLIF(COUNT(DISTINCT order_id), 0)
+    AS average_order_value
+FROM orders
+WHERE order_status = 'Completed'
+GROUP BY 1
+ORDER BY 1;</code></pre>
+<p>Compare month-over-month and year-over-year results where seasonality matters. A dip in one month may be normal; a sustained decline across comparable periods deserves deeper investigation.</p>
+<h2>4. Segment Customers to Locate the Decline</h2>
+<p>Company-wide averages can hide different customer behaviors. Create segments using customer tenure, previous spend bands, category preference, region, acquisition channel and purchase frequency. Avoid segment definitions that use future information when measuring past behavior.</p>
+<div class="table-wrap"><table><thead><tr><th>Segment to compare</th><th>Questions to investigate</th></tr></thead><tbody><tr><td>New vs. established customers</td><td>Are first-time buyers spending less after their first order, or are long-term customers changing?</td></tr><tr><td>High vs. low historical spend</td><td>Is the decline concentrated among previously valuable customers?</td></tr><tr><td>Product category</td><td>Are customers buying fewer items in a category, or shifting to cheaper alternatives?</td></tr><tr><td>Region or channel</td><td>Do certain locations, devices or acquisition sources show a stronger decline?</td></tr><tr><td>Purchase frequency</td><td>Are customers ordering less often, spending less per order, or both?</td></tr></tbody></table></div>
+<h2>5. Investigate the Possible Drivers</h2>
+<p>Build hypotheses, then test them with data rather than treating correlation as proof.</p>
+<ul><li><strong>Lower order frequency:</strong> compare orders per customer and the gap between purchases.</li><li><strong>Smaller baskets:</strong> review items per order and AOV over time.</li><li><strong>Category or price mix shift:</strong> check whether customers moved toward lower-priced categories or products.</li><li><strong>Discount dependency:</strong> compare gross sales, discounts and net sales to see if promotions are changing realized revenue.</li><li><strong>Customer experience:</strong> explore delivery, availability, return rates and complaints by segment, then validate against customer feedback.</li><li><strong>Seasonality or external change:</strong> compare similar calendar periods and note changes in pricing, assortment or market conditions.</li></ul>
+<h2>6. Build a Power BI Spending Trends Dashboard</h2>
+<p>Keep the report focused on questions decision-makers can answer. Suggested visuals:</p>
+<ul><li>Cards for net revenue, active customers, spend per active customer, AOV and repeat-purchase rate.</li><li>Monthly trend lines for spending per active customer and purchase frequency.</li><li>Segment comparison bars for customer spend change.</li><li>Category and region breakdowns to find where declines are concentrated.</li><li>A customer cohort matrix to compare spending after first purchase.</li><li>Filters for date, category, region, channel and customer segment.</li></ul>
+<p>Use clear metric definitions, consistent date filters and a visible data refresh date. Check totals against the SQL output before presenting the dashboard.</p>
+<h2>7. Turn Findings Into Actionable Recommendations</h2>
+<p>Recommendations should depend on the evidence. Examples include testing relevant product bundles when basket size is falling, improving replenishment reminders if purchase gaps increase, reviewing product availability when category spend drops, or investigating service issues when affected segments also show higher returns or complaints.</p>
+<p>Use controlled experiments where possible. Measure the outcome with a defined metric and compare against a suitable control group. Do not assume a discount will fix every spending decline—it may reduce margin without changing customer behavior.</p>
+<h2>8. A Practical Analyst Deliverable</h2>
+<p>Present a short summary that answers: how large is the decline, which segments are affected, what evidence supports the likely drivers, what remains uncertain, what action is recommended and how success will be measured? Attach the cleaned-data notes, SQL queries, dashboard and a concise recommendation so the work is reproducible.</p>
+<h2>Conclusion</h2>
+<p>Declining customer spending is a business signal, not a conclusion. A structured workflow—validating data in Excel, measuring trends with SQL, segmenting customer behavior and visualizing the results in Power BI—helps analysts move from a vague concern to a testable explanation and practical action. This kind of project develops the analytical judgment and tool skills expected in real business work.</p>
+<section class="cta"><h2>Build Practical Data Analytics Skills</h2><p>Practise real business cases, strengthen Excel, SQL and Power BI skills, and learn to turn data into decisions.</p><a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india">Explore Data Analytics Training in India</a></section>
+<div class="footer-links"><a href="../">← Roadmap Home</a><a href="./">All Data Analytics Blogs →</a></div>
+</article></main></body></html>
