@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Do Some Customers Buy Again While Others Never Return? Repeat Purchase Analysis Using Excel, SQL &amp; Power BI</title>
+<meta name="description" content="Learn how to investigate repeat purchases and one-time customers with Excel data cleaning, SQL repeat-purchase analysis, and a Power BI dashboard—plus practical business actions.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://futuretechcareerhub.github.io/data-analytics-learning-roadmap/blogs/customer-repeat-purchase-analysis-excel-sql-power-bi.html">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#263244;font-family:Arial,Helvetica,sans-serif;line-height:1.75}header{background:linear-gradient(120deg,#101c3a,#173c70);color:#fff;padding:42px 20px}header .wrap,main{max-width:920px;margin:auto}header a{color:#dbeafe;text-decoration:none;font-weight:600}header h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.2;margin:24px 0 14px}header p{color:#dbeafe;max-width:780px;margin:0}.meta{font-size:.95rem;color:#bfdbfe;margin-top:18px}main{padding:26px 18px 55px}.article{background:#fff;padding:clamp(22px,4vw,42px);border-radius:18px;box-shadow:0 8px 30px #10204012}h2{color:#172c50;margin-top:34px;line-height:1.35}h3{color:#1e3a5f;margin-top:24px}p{margin:14px 0}.intro{font-size:1.1rem}.callout{background:#eff6ff;border-left:4px solid #3974d7;padding:18px 20px;border-radius:8px;margin:22px 0}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin:18px 0;min-width:600px}th,td{padding:12px;border:1px solid #dbe3ef;text-align:left;vertical-align:top}th{background:#edf3fb;color:#19365d}ul,ol{padding-left:24px}li{margin:8px 0}.step{border:1px solid #dce5f1;border-radius:12px;padding:16px;margin:12px 0}pre{overflow:auto;background:#f4f7fb;padding:16px;border-radius:10px}.cta{margin-top:30px;background:#122447;color:#fff;padding:24px;border-radius:14px}.cta a{display:inline-block;background:#fff;color:#15345f;padding:11px 16px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:10px}.cta p{color:#e1eaff}.endlinks{display:flex;gap:18px;flex-wrap:wrap;margin-top:28px}.endlinks a{color:#1d4ed8;font-weight:600}footer{text-align:center;padding:24px;color:#637085}@media(max-width:600px){header{padding:30px 18px}.article{padding:22px 18px}table{font-size:.92rem}}
+</style></head><body>
+<header><div class="wrap"><a href="../">Home</a> &nbsp; / &nbsp; <a href="./">All Blogs</a>
+<h1>Why Are Some Customers Buying Again While Others Never Return? A Repeat Purchase Analysis Using Excel, SQL &amp; Power BI</h1>
+<p>Investigate customer purchase behaviour, distinguish repeat buyers from one-time customers, and turn the patterns into practical retention ideas.</p><div class="meta">Published: November 28, 2026 · Business analytics case study</div></div></header>
+<main><article class="article">
+<p class="intro">A business may attract many new customers but still struggle to grow steadily if most people never make a second purchase. Looking only at total orders or revenue can hide this pattern. A practical analyst investigates who returns, when they return, what they buy again and which customer groups have different repeat-purchase behaviour.</p>
+<div class="callout"><strong>Business question:</strong> Are customers returning to buy again—and what differences can we observe between repeat buyers and customers who purchased only once?</div>
+<h2>1. Define the analysis before opening the tools</h2>
+<p>First, agree on what counts as a repeat purchase. For this example, a customer is a repeat buyer if they have placed at least two distinct completed orders within the analysis period. The analyst should exclude cancelled orders and clarify how refunds or partial returns are handled.</p>
+<ul><li>How many unique customers purchased during the period?</li><li>What percentage placed more than one order?</li><li>How long does it typically take customers to place their next order?</li><li>Do repeat purchase rates vary by product category, acquisition channel or customer cohort?</li><li>Are repeat buyers contributing more revenue, and how does order value compare?</li></ul>
+<h2>2. Prepare the customer and order data in Excel</h2>
+<p>Start with order-level data containing customer IDs, order IDs, order dates, order status, product category, quantity, sales and channel. If customer information is stored separately, note the relationship between the tables.</p>
+<div class="step"><strong>Check unique identifiers:</strong> confirm order IDs and customer IDs are consistent and that the order table’s grain is understood.</div>
+<div class="step"><strong>Clean the fields:</strong> standardise dates, remove or flag duplicate records, check missing customer IDs and correct inconsistent labels.</div>
+<div class="step"><strong>Filter order status:</strong> decide whether cancelled, pending, refunded or returned orders should be included and document the rule.</div>
+<div class="step"><strong>Validate counts:</strong> compare the number of records, orders and customers before and after cleaning; verify totals.</div>
+<p>Excel can support this work through filters, formulas, conditional formatting, PivotTables and simple charts. Avoid assigning repeat status using row counts if duplicate order lines might inflate the number of orders; count distinct order IDs instead.</p>
+<h2>3. Use SQL to classify customers</h2>
+<p>SQL can aggregate transactions into customer-level metrics and classify each customer based on their number of completed orders. The example below assumes an orders table with one row per order. If the source contains order lines, aggregate distinct order IDs first.</p>
+<pre><code>WITH customer_orders AS (
+  SELECT
+    customer_id,
+    COUNT(DISTINCT order_id) AS order_count,
+    MIN(order_date) AS first_order_date,
+    MAX(order_date) AS latest_order_date,
+    SUM(order_amount) AS total_spend
+  FROM orders
+  WHERE order_status = 'Completed'
+  GROUP BY customer_id
+)
+SELECT
+  customer_id,
+  order_count,
+  total_spend,
+  CASE
+    WHEN order_count >= 2 THEN 'Repeat buyer'
+    ELSE 'One-time buyer'
+  END AS purchase_segment,
+  first_order_date,
+  latest_order_date
+FROM customer_orders;</code></pre>
+<p>This creates a customer-level view. The exact filters, date window and revenue definition should match the business rules agreed upon for the project.</p>
+<h2>4. Calculate repeat-purchase metrics</h2>
+<p>Once customers have been classified, create a small set of measures that stakeholders can understand and compare consistently.</p>
+<div class="table-wrap"><table><thead><tr><th>Metric</th><th>Definition</th><th>Why it matters</th></tr></thead><tbody>
+<tr><td>Unique customers</td><td>Count of distinct customers with eligible purchases</td><td>Shows the customer base included in the analysis</td></tr>
+<tr><td>Repeat buyers</td><td>Customers with two or more eligible orders</td><td>Quantifies returning customers</td></tr>
+<tr><td>Repeat purchase rate</td><td>Repeat buyers ÷ unique customers × 100</td><td>Shows the share of customers who purchased again during the selected period</td></tr>
+<tr><td>Orders per customer</td><td>Total eligible orders ÷ unique customers</td><td>Indicates average purchase frequency</td></tr>
+<tr><td>Average order value</td><td>Eligible revenue ÷ eligible orders</td><td>Compares basket size across segments</td></tr>
+<tr><td>Time to second order</td><td>Days between first and second eligible orders for customers with a second order</td><td>Helps understand the repeat-purchase timing</td></tr>
+</tbody></table></div>
+<p>These metrics are period-dependent. A customer who joined near the end of the date range has had less time to return than someone who joined earlier, so cohort comparisons can provide a fairer view.</p>
+<h2>5. Compare customer segments and cohorts</h2>
+<p>Aggregate metrics can hide meaningful differences. Break the analysis down carefully to explore possible patterns:</p>
+<ul><li><strong>Category:</strong> compare repeat behaviour across categories; consumable or replenishment products may have different purchase cycles than durable goods.</li><li><strong>Acquisition channel:</strong> check whether customers from different channels return at different rates, while considering spend and campaign context.</li><li><strong>Customer cohort:</strong> group customers by first-purchase month and compare repeat behaviour over similar time windows.</li><li><strong>Purchase timing:</strong> examine days between orders and identify common return windows.</li><li><strong>Order value:</strong> compare average spend and total contribution across one-time and repeat buyers.</li></ul>
+<p>Use these breakdowns to generate hypotheses—not to claim that a channel, discount or category caused customers to return. Validate interpretations with additional evidence or a controlled test where appropriate.</p>
+<h2>6. Build a Power BI dashboard</h2>
+<p>A compact dashboard could include these sections:</p>
+<ul><li><strong>Summary cards:</strong> unique customers, repeat buyers, repeat purchase rate, orders per customer.</li><li><strong>Customer split:</strong> repeat vs one-time buyers, with clear counts and percentages.</li><li><strong>Segment comparison:</strong> repeat rate by category or channel.</li><li><strong>Cohort view:</strong> how customer groups return over time after their first purchase.</li><li><strong>Timing:</strong> distribution of days to second order.</li><li><strong>Filters:</strong> date range, category, channel and region where available.</li></ul>
+<div class="callout"><strong>Dashboard quality check:</strong> verify every KPI against a SQL result or a validated spreadsheet, ensure filters behave as expected, and explain the date window and customer definition prominently.</div>
+<h2>7. Translate findings into actions</h2>
+<div class="table-wrap"><table><thead><tr><th>Possible pattern found</th><th>Hypothesis to explore</th><th>Potential next step</th></tr></thead><tbody>
+<tr><td>Repeat rate is lower for one category</td><td>Product fit, quality, replenishment cycle or customer expectations may differ</td><td>Review feedback and category-specific purchase timing</td></tr>
+<tr><td>Many first-time buyers do not return within the expected window</td><td>Onboarding, follow-up or product experience may need attention</td><td>Test a helpful follow-up message or post-purchase experience</td></tr>
+<tr><td>One channel has a strong repeat rate</td><td>Channel audience or campaign messaging could be attracting customers with different needs</td><td>Compare acquisition cost and customer value, not repeat rate alone</td></tr>
+<tr><td>Repeat buyers have higher total spend</td><td>More orders may contribute to higher lifetime revenue</td><td>Study margin, order value and customer-level contribution too</td></tr>
+</tbody></table></div>
+<p>Recommendations should be prioritised by potential impact, cost, feasibility and the strength of the evidence. A suggested retention campaign should have a measurable test plan—for example, define the eligible segment, treatment, comparison group and success metric.</p>
+<h2>8. Turn the work into a portfolio project</h2>
+<p>Document the project so a reviewer can see how you think, not just the finished dashboard:</p>
+<ol><li>Business problem and repeat-purchase definition.</li><li>Dataset description, data cleaning decisions and validation checks.</li><li>SQL queries for customer classification and metric calculations.</li><li>Dashboard screenshots and a short explanation of each visual.</li><li>Key findings, limitations and recommendations.</li><li>Suggested experiment or follow-up analysis.</li></ol>
+<h2>Skills this case study practises</h2>
+<ul><li>Excel data cleaning, validation, formulas and PivotTables.</li><li>SQL aggregation, distinct counting, CTEs, date logic and customer-level analysis.</li><li>Power BI KPI design, visualisation, filters and cohort-style reporting.</li><li>Business interpretation, analytical reasoning and insight communication.</li><li>Project documentation and portfolio presentation.</li></ul>
+<h2>Conclusion</h2>
+<p>Repeat-purchase analysis helps businesses look beyond acquisition and understand customer behaviour after the first transaction. A learner can practise a full analytics workflow by defining repeat buyers carefully, cleaning order data, calculating metrics, comparing customer segments and communicating evidence-based ideas for improving the customer experience.</p>
+<div class="cta"><h2 style="color:#fff;margin-top:0">Build practical Data Analytics skills</h2><p>Explore training details and curriculum to see how you can practise Excel, SQL, Power BI and business-focused projects as part of your learning journey.</p><a href="https://www.techpratham.com/courses/data-analytics-certification-training-in-india" target="_blank" rel="noopener">Explore Data Analytics Training</a></div>
+<div class="endlinks"><a href="../">← Home</a><a href="./">All Data Analytics Blogs →</a></div>
+</article></main><footer>Future Tech Career Hub · Data Analytics Learning</footer></body></html>
